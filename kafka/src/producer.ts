@@ -17,7 +17,7 @@ export  default class Producer extends EventEmitter {
         this.topic = config.topic;
         this.partition = config.partition;
         this.host = config.host;
-        this.client = new kafka.KafkaClient(config.host);
+        this.client = new kafka.KafkaClient({kafkaHost: config.host});
         this.producer = new Producer(this.client);
     }
 
