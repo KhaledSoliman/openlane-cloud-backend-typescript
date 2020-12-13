@@ -1,0 +1,144 @@
+import { logger, statusCode, database } from "../utils";
+import { Job, OpenlaneExecution } from "../services";
+import * as fs from "fs";
+import * as csv from "csv-parser";
+
+
+export const jobController = async (req, res) => {
+    const userUUID = req.userUUID;
+    const jobDetails = req.body.job;
+
+
+    logger.info("JOB:: Received job request");
+
+    // TODO:Missing step validate repository
+
+    const jobService = await Job.getInstance();
+    const job = await jobService.createJob(userUUID, jobDetails);
+    await jobService.publish(job)
+        .then(() => logger.info(`Job Service:: Published New Job [${job.id}]`));
+    res.status(statusCode.CREATED_201).send();
+};
+
+export const jobCancelController = async (req, res) => {
+    const userUUID = req.userUUID;
+    const jobId = req.params.jobId;
+
+    const openlaneExecution = await OpenlaneExecution.getInstance();
+
+    await database()["job"].findByPk(jobId)
+        .then(async (result) => {
+            if (result) {
+                if (result.userUUID !== userUUID)
+                    res.status(statusCode.UNAUTHORIZED_401).send();
+
+                await openlaneExecution.quitProcess(jobId).then((result) => {
+                    if (result === -1)
+                        res.status(statusCode.NOT_FOUND_404).send();
+                    else
+                        res.status(statusCode.OK_200).send();
+                });
+            } else
+                res.status(statusCode.NOT_FOUND_404).send();
+        }).catch((err) => {
+            logger.error(err);
+            res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+        });
+};
+
+export const jobDeleteController = async (req, res) => {
+    const userUUID = req.userUUID;
+    const jobId = req.params.jobId;
+
+    await database()["job"].findByPk(jobId)
+        .then(async (result) => {
+            if (result) {
+                if (result.userUUID !== userUUID)
+                    res.status(statusCode.UNAUTHORIZED_401).send();
+
+                await database()["job"].destroy({where: {id: jobId, userUUID: userUUID}})
+                    .then((result) => {
+                        if (result) {
+                            res.status(statusCode.OK_200).send();
+                        } else {
+                            res.status(statusCode.NOT_FOUND_404).send();
+                        }
+                    }).catch((err) => {
+                        logger.error(err);
+                        res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+                    });
+            } else
+                res.status(statusCode.NOT_FOUND_404).send();
+        }).catch((err) => {
+            logger.error(err);
+            res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+        });
+};
+
+export const jobsGetController = async (req, res) => {
+    const userUUID = req.userUUID;
+    const limit = req.query.limit | 500;
+    const offset = req.query.offset | 0;
+
+    database()["job"].findAndCountAll({
+        where: {
+            userUUID: userUUID
+        },
+        limit,
+        offset
+    }).then((result) => {
+        res.status(statusCode.OK_200).json(result);
+    }).catch((err) => {
+        logger.error(err);
+        res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+    });
+};
+
+export const jobGetController = async (req, res) => {
+    const userUUID = req.userUUID;
+    const jobId = req.params.jobId;
+
+    database()["job"].findOne({
+        include: "runs",
+        where: {
+            userUUID: userUUID,
+            id: jobId
+        }
+    }).then((result) => {
+        res.status(statusCode.OK_200).json(result);
+    }).catch((err) => {
+        logger.error(err);
+        res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+    });
+};
+
+export const jobReportGetController = async (req, res) => {
+    const userUUID = req.userUUID;
+    const jobId = req.params.jobId;
+
+        try {
+            const results: any = [];
+            fs.createReadStream(`./reports/${jobId}.csv`)
+                .pipe(csv())
+                .on("data", (data) => results.push(data))
+                .on("end", () => {
+                    console.log(results);
+                    res.status(statusCode.OK_200).json(results);
+                });
+        } catch (err) {
+            logger.error(err);
+            res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+        }
+    database()["job"].findOne({
+        include: "runs",
+        where: {
+            userUUID: userUUID,
+            id: jobId
+        }
+    }).then((result) => {
+        res.status(statusCode.OK_200).json(result);
+    }).catch((err) => {
+        logger.error(err);
+        res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+    });
+};
