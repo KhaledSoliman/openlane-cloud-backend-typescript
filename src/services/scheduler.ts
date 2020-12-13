@@ -1,4 +1,4 @@
-import { logger, database, MicroService } from "../utils";
+import { logger, database, MicroService, config } from "../utils";
 import * as BeeQueue from "bee-queue";
 
 
@@ -24,7 +24,12 @@ export default class Scheduler extends MicroService {
 
     constructor() {
         super();
-        this.queue = new BeeQueue("jobQueue");
+        this.queue = new BeeQueue("jobQueue", {
+            redis: {
+                host: config.databases.redis.host,
+                port: parseInt(config.databases.redis.port)
+            }
+        });
         const self = this;
 
 
