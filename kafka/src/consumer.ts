@@ -25,7 +25,8 @@ export default class Consumer extends EventEmitter {
             // 'roundrobin' or 'range' string for built ins (see below to pass in custom assignment protocol)
             protocol: ["roundrobin"],
             fromOffset: fromOffset,
-            outOfRangeOffset: "latest", // default
+            commitOffsetsOnFirstJoin: true,
+            outOfRangeOffset: "earliest", // default
         };
         if (typeof topic != "string")
             this.consumer = new kafka.ConsumerGroup(this.options, topic);

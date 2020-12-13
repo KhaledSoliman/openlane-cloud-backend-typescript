@@ -17,7 +17,7 @@ export default class Job {
         if (!this.job) {
             this.job = new Job();
             this.job.jobProducer = await KafkaProducer.initialize("PRODUCER", {
-                host: "kafka1",
+                host: "kafka1:19092",
                 topic: "job-out",
                 partition: 0
             });
