@@ -16,7 +16,7 @@ RUN npm install
 RUN npm run build
 
 # container port
-EXPOSE 8080
+EXPOSE 3030
 
 # run on cointainer start command
 CMD ["pm2-runtime", "build/src/server.js"]
