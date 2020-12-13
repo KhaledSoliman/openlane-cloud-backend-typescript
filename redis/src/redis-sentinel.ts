@@ -6,7 +6,7 @@ import constants from "./utils/constants";
 export default class RedisSentinelDriver extends EventEmitter {
     connection;
     redisConfig;
-    defaultHost: string     = "127.0.0.1";
+    defaultHost: string     = "redis";
     defaultPort: number     = 26379;
     defaultPort2: number     = 26380;
     defaultName: string = "mymaster";
