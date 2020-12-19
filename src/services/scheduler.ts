@@ -43,21 +43,21 @@ export default class Scheduler extends MicroService {
                      * Next Stage: Cloning
                      */
                     await self.publish("git-in", job.data)
-                        .then(() => logger.info(`Stage: Cloning | Job: ${job.id}`));
+                        .then(() => logger.info(`Stage: Cloning | Job: ${job.data.id}`));
                     break;
                 case "cloning":
                     /**
                      * Next Stage: running
                      */
                     await self.publish("resources-in", job.data)
-                        .then(() => logger.info(`Stage: Running | Job: ${job.id}`));
+                        .then(() => logger.info(`Stage: Running | Job: ${job.data.id}`));
                     break;
                 case "running":
                     /**
                      * Next Stage: archiving
                      */
                     await self.publish("storage-in", job.data)
-                        .then(() => logger.info(`Stage: Archiving | Job: ${job.id}`));
+                        .then(() => logger.info(`Stage: Archiving | Job: ${job.data.id}`));
                     break;
                 case "archiving":
                     /**
@@ -67,11 +67,11 @@ export default class Scheduler extends MicroService {
                     await database()["job"].update({
                         status: "completed",
                         completedAt: new Date().getTime()
-                    }, {where: {id: job.id}})
-                        .then(() => logger.info(`Stage: Completed | Job: ${job.id}`));
+                    }, {where: {id: job.data.id}})
+                        .then(() => logger.info(`Stage: Completed | Job: ${job.data.id}`));
                     break;
                 case "stopping":
-                    await database()["run"].update({status: "stopped"}, {where: {jobId: job.id}});
+                    await database()["run"].update({status: "stopped"}, {where: {jobId: job.data.id}});
                     break;
                 default:
                     throw new Error("Undefined Job Stage");
@@ -111,7 +111,7 @@ export default class Scheduler extends MicroService {
          * Register Job Event Listeners
          */
         job.on("succeeded", async (stopped) => {
-            logger.info("A7a");
+            logger.info("Scheduler:: Stage Done");
         });
 
         job.on("failed", async (result) => {

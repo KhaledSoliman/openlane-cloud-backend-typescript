@@ -44,7 +44,7 @@ export default class MicroService {
             await this.producers[productionTopic].publish({
                 message: msg,
             });
-            logger.info(productionTopic + ":: Passed order to " + productionTopic + " ;)");
+            logger.info(productionTopic + ":: Passed message to " + productionTopic);
         } catch (e) {
             throw new Error(e);
         }
