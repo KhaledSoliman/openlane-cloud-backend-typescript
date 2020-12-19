@@ -42,7 +42,7 @@ export default class OpenlaneExecution extends MicroService {
      */
     RunCommandStringFactory(tag, jobDetails): string {
         const args = {};
-        const jobDesignDirectoryPath = `./${this.config.directories.designs}/${jobDetails.Id}-${jobDetails.designName}`;
+        const jobDesignDirectoryPath = `./${this.config.directories.designs}/${jobDetails.id}-${jobDetails.designName}`;
         switch (jobDetails.type) {
             case "normal":
                 args["type"] = "regular";

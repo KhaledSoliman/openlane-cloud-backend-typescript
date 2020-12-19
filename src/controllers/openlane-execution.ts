@@ -10,7 +10,9 @@ export const openlaneExecutionController = async (data) => {
 
     const jobExecutionData = await openlaneExecution.runJob(jobDetails);
 
-    jobDetails = await database()["job"].findByPk(jobDetails.id);
+    jobDetails = await database()["job"].findByPk(jobDetails.id, {
+        raw: true
+    });
 
     console.dir(jobExecutionData);
 

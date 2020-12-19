@@ -32,9 +32,11 @@ const init = async function (): Promise<void> {
         // do your initialization here
         logger.info("BOOT :: booting services...");
         await registerConsumer(Scheduler, "job-out", schedulerJobQueueController);
+
         await registerConsumer(Scheduler, "git-out", schedulerJobRequeueController);
         await registerConsumer(Scheduler, "resources-out", schedulerJobRequeueController);
         await registerConsumer(Scheduler, "storage-out", schedulerJobRequeueController);
+
         await registerConsumer(Git, "git-in", gitController);
         await registerConsumer(OpenlaneExecution, "resources-in", openlaneExecutionController);
         await registerConsumer(Storage, "storage-in", storageController);

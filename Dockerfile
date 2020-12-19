@@ -14,7 +14,6 @@ COPY . .
 # install node dependency and build project
 RUN npm install
 RUN npm run build
-RUN mv ./src/openlane-run.sh ./build/src/
 
 # container port
 EXPOSE 3030

@@ -13,7 +13,5 @@ COPY package*.json ./
 # install node dependency and build project
 RUN npm install
 
-RUN mv ./src/openlane-run.sh ./build/src/
-
 # container port
 EXPOSE 8080
