@@ -18,7 +18,6 @@ export const schedulerJobQueueController = async (data) => {
 
 export const schedulerJobRequeueController = async (data) => {
     const jobDetails = JSON.parse(data.value).message;
-    logger.info(jobDetails);
     console.dir(jobDetails);
     const scheduler = await Scheduler.getInstance();
     await scheduler.addJobToQueue(jobDetails);

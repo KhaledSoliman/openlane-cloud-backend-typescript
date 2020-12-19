@@ -12,7 +12,11 @@ export const openlaneExecutionController = async (data) => {
 
     jobDetails = await database()["job"].findByPk(jobDetails.id);
 
+    console.dir(jobExecutionData);
+
     jobDetails.executionData = jobExecutionData;
+
+    console.dir(jobDetails);
 
     await openlaneExecution.publish("resources-out", jobDetails);
 };
