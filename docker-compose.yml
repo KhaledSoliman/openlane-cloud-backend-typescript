@@ -59,13 +59,16 @@ services:
         image: google/cadvisor:latest
         container_name: cadvisor
         userns_mode: "host"
-        command:
-            - '--v=5'
+        privileged: true
+        command: -logtostderr -docker_only
         volumes:
             - /:/rootfs:ro
-            - /var/run:/var/run:rw
+            - /var/run:/var/run:ro
             - /sys:/sys:ro
             - /var/lib/docker/:/var/lib/docker:ro
+            - /dev/disk/:/dev/disk:ro
+            - /cgroup:/cgroup:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
         ports:
             - 8080:8080
         restart: always
