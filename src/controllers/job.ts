@@ -173,13 +173,14 @@ export const jobDownloadGetController = async (req, res) => {
                 const filestream = fs.createReadStream(file);
                 filestream.pipe(res);
             } catch (e) {
-                console.log(e);
+                logger.error(e.message);
                 res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
             }
         } else
             res.status(statusCode.NOT_FOUND_404).send();
     }).catch((err) => {
-        logger.error(err);
+        console.dir(err);
+        logger.error(err.message);
         res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
     });
 };

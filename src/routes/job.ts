@@ -18,7 +18,7 @@ router.post("/v1/job/:jobId/delete/", middleware.authMiddleware, jobDeleteContro
 
 router.get("/v1/job/", middleware.authMiddleware, jobsGetController);
 router.get("/v1/job/:jobId", middleware.authMiddleware, jobGetController);
-router.get("/v1/job/:jobId/:runId/download", middleware.authMiddleware, jobDownloadGetController);
+router.get("/v1/job/:jobId/:runName/download", middleware.authMiddleware, jobDownloadGetController);
 router.get("/v1/job/:jobId/report", middleware.authMiddleware, jobReportGetController);
 
 export default router;
