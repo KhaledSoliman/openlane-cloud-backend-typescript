@@ -1,7 +1,6 @@
 import { logger, MicroService, database, config } from "../utils";
 import * as shell from "shelljs";
 import * as fs from "fs";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * @class ResourceService
@@ -105,7 +104,7 @@ export default class OpenlaneExecution extends MicroService {
         const self = this;
 
         // Generate a uuid tag for this run
-        const tag = uuidv4();
+        const tag = jobDetails.id;
         logger.info(`Generated tag for job run: ${tag}`);
 
         // Construct arguments for job type
