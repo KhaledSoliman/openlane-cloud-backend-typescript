@@ -246,7 +246,7 @@ export default class OpenlaneExecution extends MicroService {
                     if (items.length > 0) {
                         job.runs[i].currentStage++;
                         database()["run"].update({
-                            status: `running-${self.config.openlane.job.stages[job.runs[i].currentStage]}`
+                            status: `running-${self.config.job.stages[job.runs[i].currentStage]}`
                         }, {where: {id: job.runs[i].id}})
                             .then(() => {
                                 self.jobs.set(jobId, job);
