@@ -24,7 +24,7 @@ export default {
             logs: "logs",
         },
         job: {
-            executionCommand: "sudo /app/src/openlane-run.sh",
+            executionCommand: "sudo ../../src/openlane-run.sh",
             stages: [
                 "synthesis",
                 "floorplan",

@@ -115,6 +115,7 @@ export default class OpenlaneExecution extends MicroService {
 
         // Execute Child Process
         logger.info(`Executing openlane ${jobDetails.type} shell script...`);
+        shell.ls();
         const childProcess = shell.exec(commandString, {silent: true, async: true});
 
         // Status Update Polling
