@@ -137,9 +137,9 @@ export default class OpenlaneExecution extends MicroService {
         // Register event listeners on both err and out pipes
         logger.info(`Registering event listeners for Job: ${jobDetails.id}`);
 
-        if (childProcess.stdout && childProcess.stderr) {
             // Out Pipe
-            childProcess.stdout.on("data", (data) => {
+            // @ts-ignore
+        childProcess.stdout.on("data", (data) => {
                 // Log
                 logger.info(data);
                 // Stream
@@ -147,7 +147,8 @@ export default class OpenlaneExecution extends MicroService {
             });
 
             // Err Pipe
-            childProcess.stderr.on("data", function (data) {
+            // @ts-ignore
+        childProcess.stderr.on("data", function (data) {
                 // Log
                 logger.info(data);
                 // Stream
@@ -177,7 +178,6 @@ export default class OpenlaneExecution extends MicroService {
                     }).then(() => logger.info(`Run ${keywords[1]} has completed at ${completedAt}`));
                 }
             });
-        }
 
 
         // Exit Listener
