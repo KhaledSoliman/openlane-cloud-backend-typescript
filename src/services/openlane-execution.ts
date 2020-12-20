@@ -204,7 +204,7 @@ export default class OpenlaneExecution extends MicroService {
                 logger.info(`Stopping Job #${jobId}`);
                 job.stopped = true;
                 this.jobs.set(jobId, job);
-                const childProcess = shell.exec(`sudo docker stop ${job.tag}`, {
+                const childProcess = shell.exec(`docker stop ${job.tag}`, {
                     silent: true,
                     async: true
                 });

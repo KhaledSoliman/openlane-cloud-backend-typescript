@@ -1,11 +1,14 @@
-FROM node:12
+FROM node:10
 
 # working directory
 RUN mkdir /app
 WORKDIR /app
 
 # update the operting system
-RUN apt-get update
+USER root
+RUN apt-get update \
+      && apt-get install -y sudo \
+      && rm -rf /var/lib/apt/lists/*
 RUN npm install pm2 -g
 
 #copy all the files

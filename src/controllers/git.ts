@@ -13,6 +13,6 @@ export const gitController = async (data) => {
         .then(() => logger.info("Cloning Done"));
 
     jobDetails = await database()["job"].findByPk(jobDetails.id);
-    console.log("A7EEEEĘ");
+
     await git.publish("git-out", jobDetails);
 };

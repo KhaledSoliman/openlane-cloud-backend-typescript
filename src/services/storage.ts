@@ -29,12 +29,12 @@ export default class Storage extends MicroService {
                     runPath,
                     `./downloads/${jobDetails.userUUID}-${jobDetails.id}-${jobDetails.executionData.runs[i].name}.zip`
                 );
-                shell.exec(`sudo rm -rf ${runPath}`);
+                shell.exec(`rm -rf ${runPath}`);
             }
             if (jobDetails.type === "exploratory")
-                shell.exec(`sudo rm -rf ${this.config.path}/${this.config.directories.scripts}/${jobDetails.executionData.tag}-regression.config`);
+                shell.exec(`rm -rf ${this.config.path}/${this.config.directories.scripts}/${jobDetails.executionData.tag}-regression.config`);
 
-            shell.exec(`sudo mv ./${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ./${this.config.directories.reports}/${jobDetails.id}.csv`);
+            shell.exec(`mv ./${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ./${this.config.directories.reports}/${jobDetails.id}.csv`);
             resolve();
         });
     }

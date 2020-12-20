@@ -15,7 +15,7 @@ services:
 #        #container_name: nginx
 #        #hostname: nginx
 #        #build: ${PWD}/config/nginx
-#        #Expose port 80 to allow users to hit content and generate data for filebeat and packetbeat
+#        #Expose port 80 to allow users to hit content and generate data for
 #        ports: ['80:80']
 #        command: nginx -g 'daemon off;'
 #        volumes:
@@ -115,6 +115,10 @@ services:
     backend:
         build: .
         container_name: backend
+        privileged: true
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /usr/bin/docker:/usr/bin/docker
         ports:
             - "3030:3030"
         depends_on:
