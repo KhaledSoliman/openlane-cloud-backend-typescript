@@ -43,8 +43,8 @@ export class Run extends Model<RunAttributes, RunCreationAttributes>
 
     static associate(models) {
         models["run"].belongsTo(models["job"], {
-            sourceKey: "jobId",
-            foreignKey: "id",
+            foreignKey: "jobId",
+            targetKey: "id",
             as: "job",
         });
     }
