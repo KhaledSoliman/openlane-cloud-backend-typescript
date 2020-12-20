@@ -119,6 +119,7 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - /usr/bin/docker:/usr/bin/docker
+            - ./src/openlane-run.sh:/app/src/openlane-run.sh
             - ./src/openlane_working_dir:/app/src/openlane_working_dir
         ports:
             - "3030:3030"
