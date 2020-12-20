@@ -22,10 +22,10 @@ export default class Storage extends MicroService {
     }
 
     async archive(jobDetails) {
-        return new Promise(resolve => {
+        return new Promise(async (resolve) => {
             for (let i = 0; i < jobDetails.executionData.runs.length; i++) {
                 const runPath = `./${this.config.path}/${this.config.directories.designs}/${jobDetails.id}-${jobDetails.designName}/${this.config.directories.runs}/${jobDetails.executionData.runs[i].name}`;
-                this.zip(
+                await this.zip(
                     runPath,
                     `./${this.config.job.outDirectories.downloads}/${jobDetails.userUUID}-${jobDetails.id}-${jobDetails.executionData.runs[i].name}.zip`
                 );
@@ -41,7 +41,7 @@ export default class Storage extends MicroService {
         });
     }
 
-    zip(inputPath, outputPath) {
+    async zip(inputPath, outputPath) {
         const output = fs.createWriteStream(outputPath);
         const archive = archiver("zip", {
             zlib: {level: 9} // Sets the compression level.
@@ -60,6 +60,6 @@ export default class Storage extends MicroService {
             // logger.error(err);
         });
         archive.pipe(output);
-        archive.directory(inputPath, false).finalize();
+        await archive.directory(inputPath, false).finalize();
     }
 }
