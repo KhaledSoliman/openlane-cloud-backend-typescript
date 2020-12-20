@@ -1,4 +1,4 @@
-import { MicroService } from "../utils";
+import { MicroService, config } from "../utils";
 import { exec, rm } from "shelljs";
 
 /**
@@ -7,15 +7,18 @@ import { exec, rm } from "shelljs";
  */
 export default class Git extends MicroService {
     public static git;
-    readonly reposPath = "./src/openlane_working_dir/openlane/designs";
+    readonly reposPath;
+    readonly config;
 
-    constructor() {
+    constructor(config) {
         super();
+        this.config = config;
+        this.reposPath = `./${this.config.path}/${this.config.directories.designs}`;
     }
 
     public static async getInstance(): Promise<Git> {
         if (!this.git) {
-            this.git = new Git();
+            this.git = new Git(config.openlane);
             await this.git.init("git", ["git-out"], ["git-in"]);
             return this.git;
         }

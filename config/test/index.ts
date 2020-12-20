@@ -14,7 +14,7 @@ export default {
         }
     },
     openlane: {
-        path: "openlane_working_dir/openlane",
+        path: "src/openlane_working_dir/openlane",
         directories: {
             scripts: "scripts",
             designs: "designs",

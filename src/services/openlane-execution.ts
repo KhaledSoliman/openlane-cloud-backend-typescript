@@ -164,7 +164,7 @@ export default class OpenlaneExecution extends MicroService {
                         const job = self.jobs.get(jobDetails.id);
                         job.runs.push(run);
                         self.jobs.set(jobDetails.id, job);
-                        logger.info(`Run ${keywords[1]} has completed at ${run.createdAt}`);
+                        logger.info(`Run ${keywords[1]} has started at ${run.createdAt}`);
                     });
                 } else if (data.includes("finished")) {
                     const completedAt = new Date().getTime();
@@ -239,7 +239,7 @@ export default class OpenlaneExecution extends MicroService {
                     scanDirectoryPath + this.config.job.stages[job.runs[i].currentStage], function (err, items) {
                     // No directory yet
                     if (err) {
-                        logger.error(err);
+                        logger.error(err.message);
                         return;
                     }
                     // First Stage
