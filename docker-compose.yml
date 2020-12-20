@@ -105,7 +105,7 @@ services:
             KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
             KAFKA_BROKER_ID: 1
-            KAFKA_LOG4J_LOGGERS: "kafka.controller=WARN,kafka.producer.async.DefaultEventHandler=WARN,state.change.logger=WARN"
+            KAFKA_LOG4J_LOGGERS: "org.apache.zookeeper=ERROR,org.apache.kafka=ERROR,kafka=ERROR,kafka.cluster=ERROR,kafka.controller=ERROR,kafka.coordinator=ERROR,kafka.log=ERROR,kafka.server=ERROR,kafka.zookeeper=ERROR,state.change.logger=ERROR"
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         volumes:
             - ./kafka/data:/var/lib/kafka/data
@@ -119,6 +119,7 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - /usr/bin/docker:/usr/bin/docker
+            - ./src/openlane_working_dir:/app/src/openlane_working_dir
         ports:
             - "3030:3030"
         depends_on:
