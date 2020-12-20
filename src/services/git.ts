@@ -7,7 +7,7 @@ import { exec, rm } from "shelljs";
  */
 export default class Git extends MicroService {
     public static git;
-    readonly reposPath = "./openlane_working_dir/openlane/designs";
+    readonly reposPath = "./src/openlane_working_dir/openlane/designs";
 
     constructor() {
         super();

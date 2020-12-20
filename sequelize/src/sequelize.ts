@@ -15,7 +15,8 @@ export default class SequelizeDB extends EventEmitter {
         this.connection = new Sequelize({
             dialect: "sqlite",
             storage: config.database,
-            logging: logger.debug.bind(logger),
+            logging: false,
+            // logging: msg => logger.debug(msg),
             pool: {
                 max: config.connectionLimit,
                 min: 0,
