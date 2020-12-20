@@ -118,6 +118,7 @@ const startApp  = async (): Promise<void> => {
             }
         })
             .on("listening", () => {
+                logger.info("Current Working Directory: " + process.cwd());
                 logger.info(`BOOT :: <> <> <> <> <> <> <> <> <> <> Listening on ${constants.HOST}:${constants.PORT} <> <> <> <> <> <> <> <> <> <>`);
             });
 
