@@ -25,6 +25,10 @@ export default {
         },
         job: {
             executionCommand: "/app/src/openlane-run.sh",
+            outDirectories: {
+                downloads: "./src/downloads",
+                reports: "./src/reports",
+            },
             stages: [
                 "synthesis",
                 "floorplan",

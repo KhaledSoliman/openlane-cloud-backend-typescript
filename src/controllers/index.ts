@@ -4,7 +4,8 @@ import {
     jobDeleteController,
     jobGetController,
     jobReportGetController,
-    jobsGetController
+    jobsGetController,
+    jobDownloadGetController
 } from "./job";
 import { schedulerJobQueueController, schedulerJobRequeueController } from "./scheduler";
 import { gitController } from "./git";
@@ -22,5 +23,6 @@ export {
     schedulerJobRequeueController,
     gitController,
     storageController,
-    openlaneExecutionController
+    openlaneExecutionController,
+    jobDownloadGetController
 };

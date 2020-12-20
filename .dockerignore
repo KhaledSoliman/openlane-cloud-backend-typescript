@@ -4,3 +4,5 @@ build
 src/openlane_working_dir
 src/openlane-git.sh
 src/openlane-run.sh
+src/downloads
+src/reports

@@ -1,6 +1,8 @@
-import { logger, statusCode, database } from "../utils";
+import { logger, statusCode, database, config } from "../utils";
 import { Job, OpenlaneExecution } from "../services";
 import * as fs from "fs";
+import * as path from "path";
+import * as mime from "mime";
 import * as csv from "csv-parser";
 
 
@@ -116,27 +118,66 @@ export const jobReportGetController = async (req, res) => {
     const userUUID = req.userUUID;
     const jobId = req.params.jobId;
 
-        try {
-            const results: any = [];
-            fs.createReadStream(`./reports/${jobId}.csv`)
-                .pipe(csv())
-                .on("data", (data) => results.push(data))
-                .on("end", () => {
-                    console.log(results);
-                    res.status(statusCode.OK_200).json(results);
-                });
-        } catch (err) {
-            logger.error(err);
-            res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
-        }
     database()["job"].findOne({
-        include: "runs",
         where: {
-            userUUID: userUUID,
             id: jobId
         }
     }).then((result) => {
-        res.status(statusCode.OK_200).json(result);
+        if (result) {
+            if (result.userUUID !== userUUID)
+                res.status(statusCode.UNAUTHORIZED_401).send();
+
+            try {
+                const results: any = [];
+                fs.createReadStream(`./${config.openlane.job.outDirectories.reports}/${jobId}.csv`)
+                    .pipe(csv())
+                    .on("data", (data) => results.push(data))
+                    .on("end", () => {
+                        console.log(results);
+                        res.status(statusCode.OK_200).json(results);
+                    });
+            } catch (err) {
+                logger.error(err);
+                res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+            }
+        } else
+            res.status(statusCode.NOT_FOUND_404).send();
+    }).catch((err) => {
+        logger.error(err);
+        res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+    });
+};
+
+export const jobDownloadGetController = async (req, res) => {
+    const userUUID = req.userUUID;
+    const jobId = req.params.jobId;
+    const runName = req.params.runName;
+
+    database()["run"].findOne({
+        include: "job",
+        where: {
+            jobId: jobId,
+            name: runName
+        }
+    }).then((result) => {
+        if (result) {
+            if (result.job.userUUID !== userUUID)
+                res.status(statusCode.UNAUTHORIZED_401).send();
+
+            try {
+                const file = `./${config.openlane.job.outDirectories.downloads}/${userUUID}-${jobId}-${runName}.zip`;
+                const filename = path.basename(file);
+                const mimetype = mime.getType(file);
+                res.setHeader("Content-disposition", "attachment; filename=" + filename);
+                res.setHeader("Content-type", mimetype);
+                const filestream = fs.createReadStream(file);
+                filestream.pipe(res);
+            } catch (e) {
+                console.log(e);
+                res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();
+            }
+        } else
+            res.status(statusCode.NOT_FOUND_404).send();
     }).catch((err) => {
         logger.error(err);
         res.status(statusCode.INTERNAL_SERVER_ERROR_500).send();

@@ -121,6 +121,8 @@ services:
             - /usr/bin/docker:/usr/bin/docker
             - ./src/openlane-run.sh:/app/src/openlane-run.sh
             - ./src/openlane_working_dir:/app/src/openlane_working_dir
+            - ./src/downloads:/app/src/downloads
+            - ./src/reports:/app/src/reports
         ports:
             - "3030:3030"
         depends_on:
