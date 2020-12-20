@@ -71,7 +71,9 @@ export default class Scheduler extends MicroService {
                         .then(() => logger.info(`Stage: Completed | Job: ${job.data.id}`));
                     break;
                 case "stopping":
-                    await database()["run"].update({status: "stopped"}, {where: {jobId: job.data.id}});
+                    await database()["run"].update({status: "stopped"}, {where: {jobId: job.data.id}})
+                        .then(async () => await database()["job"].update({status: "stopped"}, {where: {id: job.data.id}})
+                            .then(() => logger.info(`Stage: Stopped | Job: ${job.data.id}`)));
                     break;
                 default:
                     throw new Error("Undefined Job Stage");
