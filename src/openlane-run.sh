@@ -30,7 +30,7 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-PDK_ROOT=/home/ks/openlane-cloud/backend/openlane_working_dir/pdks
+PDK_ROOT=/home/ks/openlane-cloud-backend-typescript/openlane_working_dir/pdks
 
 cd openlane_working_dir/openlane || exit
 DOCKER_ID=$(sudo docker run --rm --cpus="$cpus" --memory="$memory" --name="$tag" -div  $(pwd):/openLANE_flow -v $PDK_ROOT:$PDK_ROOT -e PDK_ROOT=$PDK_ROOT -u $(id -u $USER):$(id -g $USER) openlane:cloud)
