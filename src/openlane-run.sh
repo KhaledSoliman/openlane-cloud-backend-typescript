@@ -32,8 +32,7 @@ while [ $# -gt 0 ]; do
 done
 
 PDK_ROOT=/home/ks/openlane-cloud-backend-typescript/src/openlane_working_dir/pdks
-
-cd ./openlane_working_dir/openlane || \
+cd ./src/openlane_working_dir/openlane || \
      { echo "Cannot enter openlane dir"; exit 1; }
 ls
 pwd
