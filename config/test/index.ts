@@ -1,4 +1,3 @@
-// --job-name=TestJob --ntasks=3 --cpus-per-task=4 --partition=
 export default {
     switches: {
         new_relic: false,
@@ -14,9 +13,6 @@ export default {
             port: "6379",
         }
     },
-    slurm: {
-        batchJob: ""
-    },
     openlane: {
         path: "/apps/openlane",
         directories: {
@@ -28,7 +24,7 @@ export default {
             logs: "logs",
         },
         job: {
-            executionCommand: "sbatch --nodes=1 -t00:50:00 ./app/src/openlane-job.sh https://storage.googleapis.com/copper-array-312208-singularity gs://copper-array-312208-singularity-job-out",
+            executionCommand: "/app/src/slurm.sh",
             outDirectories: {
                 downloads: "./src/downloads",
                 reports: "./src/reports",
