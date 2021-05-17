@@ -119,8 +119,10 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - /usr/bin/docker:/usr/bin/docker
+            - /apps:/apps
             - ./src/openlane-run.sh:/app/src/openlane-run.sh
-            - ./src/openlane_working_dir:/app/src/openlane_working_dir
+            - ./src/openlane-job.sh:/app/src/openlane-job.sh
+            - ./src/slurm.sh:/app/src/slurm.sh
             - ./src/downloads:/app/src/downloads
             - ./src/reports:/app/src/reports
         ports:
