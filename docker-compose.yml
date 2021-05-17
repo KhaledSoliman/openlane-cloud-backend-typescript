@@ -118,7 +118,7 @@ services:
         privileged: true
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - /usr/bin/docker:/usr/bin/docker
+            - /usr/bin:/usr/bin
             - /apps:/apps
             - ./src/openlane-run.sh:/app/src/openlane-run.sh
             - ./src/openlane-job.sh:/app/src/openlane-job.sh
