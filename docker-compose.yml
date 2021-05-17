@@ -115,6 +115,9 @@ services:
     backend:
         build: .
         container_name: backend
+        network_mode: "bridge"
+        environment:
+            - "EXTERNAL_IP=${EXTERNAL_IP}"
         privileged: true
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock

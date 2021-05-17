@@ -9,6 +9,7 @@ USER root
 RUN apt-get update \
       && apt-get install -y sudo \
       && rm -rf /var/lib/apt/lists/*
+RUN apt install openssh-client
 RUN npm install pm2 -g
 
 #copy all the files
