@@ -1,0 +1,12 @@
+Bootstrap: docker
+From: efabless/openlane:current
+
+%environment
+PDK_ROOT=/apps/openlane/pdks
+
+%runscript
+exec "$@"
+
+%post
+  echo "Post install Step"
+

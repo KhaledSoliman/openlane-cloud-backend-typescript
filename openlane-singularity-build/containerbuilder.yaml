@@ -1,0 +1,7 @@
+steps:
+- name: gcr.io/copper-array-312208/singularity-3.7.3
+  args: ['build', 'openlane.sif', 'openlane.def']
+artifacts:
+  objects:
+    location: 'gs://copper-array-312208-singularity'
+    paths: ['openlane.sif']
