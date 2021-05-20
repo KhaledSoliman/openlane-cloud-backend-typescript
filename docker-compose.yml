@@ -118,8 +118,6 @@ services:
         network_mode: "host"
         pid: "host"
         ipc: "host"
-        environment:
-            - "EXTERNAL_IP=${EXTERNAL_IP}"
         privileged: true
         volumes:
             - /:/host
