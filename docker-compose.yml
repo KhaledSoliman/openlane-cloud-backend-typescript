@@ -126,8 +126,6 @@ services:
             - ./src/slurm.sh:/host/app/src/slurm.sh
             - ./src/downloads:/host/app/src/downloads
             - ./src/reports:/host/app/src/reports
-        ports:
-            - "3030:3030"
         command: chroot /host
         depends_on:
             - redis
