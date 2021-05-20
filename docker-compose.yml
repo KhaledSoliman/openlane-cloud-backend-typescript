@@ -118,8 +118,8 @@ services:
         network_mode: "host"
         pid: "host"
         ipc: "host"
-        tty: true
         privileged: true
+        tty: true
         volumes:
             - /:/host
             - ./src/openlane-run.sh:/host/app/src/openlane-run.sh
@@ -127,6 +127,7 @@ services:
             - ./src/slurm.sh:/host/app/src/slurm.sh
             - ./src/downloads:/host/app/src/downloads
             - ./src/reports:/host/app/src/reports
+        command: chroot /host
         depends_on:
             - redis
             - kafka1

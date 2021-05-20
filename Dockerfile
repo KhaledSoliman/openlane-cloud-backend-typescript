@@ -25,6 +25,6 @@ RUN npm run build
 EXPOSE 3030
 
 # run on cointainer start command
-CMD ["chroot /host", "pm2-runtime", "build/src/server.js"]
+CMD ["pm2-runtime", "build/src/server.js"]
 
 
