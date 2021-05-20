@@ -1,8 +1,8 @@
 FROM node:12
 
 # working directory
-RUN mkdir /app
-WORKDIR /app
+RUN mkdir /host/app
+WORKDIR /host/app
 
 # update the operting system
 USER root
