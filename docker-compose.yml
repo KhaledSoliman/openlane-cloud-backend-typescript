@@ -115,21 +115,22 @@ services:
     backend:
         build: .
         container_name: backend
-        network_mode: "bridge"
+        network_mode: "host"
+        pid: "host"
+        ipc: "host"
         environment:
             - "EXTERNAL_IP=${EXTERNAL_IP}"
         privileged: true
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - /usr/bin:/usr/bin
-            - /apps:/apps
-            - ./src/openlane-run.sh:/app/src/openlane-run.sh
-            - ./src/openlane-job.sh:/app/src/openlane-job.sh
-            - ./src/slurm.sh:/app/src/slurm.sh
-            - ./src/downloads:/app/src/downloads
-            - ./src/reports:/app/src/reports
+            - /:/host
+            - ./src/openlane-run.sh:/host/app/src/openlane-run.sh
+            - ./src/openlane-job.sh:/host/app/src/openlane-job.sh
+            - ./src/slurm.sh:/host/app/src/slurm.sh
+            - ./src/downloads:/host/app/src/downloads
+            - ./src/reports:/host/app/src/reports
         ports:
             - "3030:3030"
+        command: chroot /host
         depends_on:
             - redis
             - kafka1
