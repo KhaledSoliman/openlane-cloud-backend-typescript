@@ -1,10 +1,8 @@
 FROM node:12
 
 # working directory
-
-RUN mkdir /host
-RUN mkdir /host/app
-WORKDIR /host/app
+RUN mkdir /app
+WORKDIR /app
 
 # update the operting system
 USER root
@@ -26,5 +24,4 @@ EXPOSE 3030
 
 # run on cointainer start command
 CMD ["pm2-runtime", "build/src/server.js"]
-
 

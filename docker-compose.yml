@@ -118,15 +118,19 @@ services:
         network_mode: "host"
         pid: "host"
         ipc: "host"
-        privileged: true
         tty: true
+        privileged: true
         volumes:
-            - /:/host
-            - ./src/openlane-run.sh:/host/app/src/openlane-run.sh
-            - ./src/openlane-job.sh:/host/app/src/openlane-job.sh
-            - ./src/slurm.sh:/host/app/src/slurm.sh
-            - ./src/downloads:/host/app/src/downloads
-            - ./src/reports:/host/app/src/reports
+            - /var/:/var/
+            - /usr/:/usr/
+            - /apps:/apps
+            - ./src/openlane-run.sh:/app/src/openlane-run.sh
+            - ./src/openlane-job.sh:/app/src/openlane-job.sh
+            - ./src/slurm.sh:/app/src/slurm.sh
+            - ./src/downloads:/app/src/downloads
+            - ./src/reports:/app/src/reports
+        ports:
+            - "3030:3030"
         depends_on:
             - redis
             - kafka1
