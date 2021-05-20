@@ -123,6 +123,7 @@ services:
         volumes:
             - /var/:/var/
             - /usr/:/usr/
+            - /slurm/:/slurm/
             - /apps:/apps
             - ./src/openlane-run.sh:/app/src/openlane-run.sh
             - ./src/openlane-job.sh:/app/src/openlane-job.sh
