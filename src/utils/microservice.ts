@@ -17,7 +17,7 @@ export default class MicroService {
 
             // Initialize Producer
             this.producers[productionTopic] = await KafkaProducer.initialize("PRODUCER", {
-                host: "localhost:19092",
+                host: "localhost:9092",
                 topic: productionTopic,
                 partition: partition
             });
@@ -32,7 +32,7 @@ export default class MicroService {
 
             // Initialize Consumer
             this.consumers[consumptionTopic] = await KafkaConsumer.initialize("CONSUMER", {
-                host: "localhost:19092",
+                host: "localhost:9092",
                 topic: consumptionTopic,
                 groupId: consumerGroup,
             });
