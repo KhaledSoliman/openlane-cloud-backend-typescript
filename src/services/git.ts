@@ -13,7 +13,7 @@ export default class Git extends MicroService {
     constructor(config) {
         super();
         this.config = config;
-        this.reposPath = `./${this.config.path}/${this.config.directories.designs}`;
+        this.reposPath = `${this.config.path}/${this.config.directories.designs}`;
     }
 
     public static async getInstance(): Promise<Git> {
