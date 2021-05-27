@@ -74,8 +74,6 @@ services:
         restart: always
         deploy:
             mode: global
-        depends_on:
-          - backend
 
     zoo1:
         image: zookeeper:3.4.9
