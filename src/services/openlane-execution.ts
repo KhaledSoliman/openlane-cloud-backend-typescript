@@ -184,10 +184,11 @@ export default class OpenlaneExecution extends MicroService {
             childProcess.on("exit", () => {
                 // Cleanup
                 const job = self.jobs.get(jobDetails.id);
-                clearInterval(job.intervalId);
-                this.jobs.delete(jobDetails.id);
+                // clearInterval(job.intervalId);
+                // this.jobs.delete(jobDetails.id);
                 resolve(job);
             });
+
         });
     }
 

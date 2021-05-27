@@ -20,5 +20,5 @@ export const openlaneExecutionController = async (data) => {
 
     console.dir(jobDetails);
 
-    await openlaneExecution.publish("resources-out", jobDetails);
+    // await openlaneExecution.publish("resources-out", jobDetails);
 };
