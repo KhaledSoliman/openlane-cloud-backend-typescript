@@ -115,7 +115,6 @@ services:
     backend:
         build: .
         container_name: backend
-        network_mode: "host"
         privileged: true
         volumes:
             - /apps:/apps
