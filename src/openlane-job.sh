@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -x
-
+echo "$@"
 OPEN_LANE_PATH=/apps/openlane
 PDK_ROOT=/apps/openlane/pdks
 
@@ -38,7 +38,7 @@ while [ $# -gt 0 ]; do
       ;;
     *)
       printf "* Invalid argument Passed *"
-      exit 1
+#      exit 1
   esac
   shift
 done
