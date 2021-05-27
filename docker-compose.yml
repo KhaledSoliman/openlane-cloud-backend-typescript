@@ -115,6 +115,7 @@ services:
     backend:
         build: .
         container_name: backend
+        network_mode: "host"
         privileged: true
         volumes:
             - /apps:/apps
@@ -123,8 +124,8 @@ services:
             - ./src/slurm.sh:/app/src/slurm.sh
             - ./src/downloads:/app/src/downloads
             - ./src/reports:/app/src/reports
-        ports:
-            - "3030:3030"
+#        ports:
+#            - "3030:3030"
         depends_on:
             - redis
             - kafka1

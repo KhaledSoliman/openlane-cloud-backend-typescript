@@ -9,7 +9,7 @@ export default {
         },
         redis: {
             enable: true,
-            host: "redis",
+            host: "localhost",
             port: "6379",
         }
     },
