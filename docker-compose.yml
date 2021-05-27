@@ -118,7 +118,7 @@ services:
         network_mode: "host"
         privileged: true
         volumes:
-            - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
+            - ${SSH_AUTH_SOCK}:/ssh-agent # Forward local machine SSH key to docker
             - /apps:/apps
             - ./src/openlane-run.sh:/app/src/openlane-run.sh
             - ./src/openlane-job.sh:/app/src/openlane-job.sh
@@ -126,7 +126,7 @@ services:
             - ./src/downloads:/app/src/downloads
             - ./src/reports:/app/src/reports
         environment:
-            SSH_AUTH_SOCK: /ssh-agent
+            - SSH_AUTH_SOCK
         depends_on:
             - redis
             - kafka1
