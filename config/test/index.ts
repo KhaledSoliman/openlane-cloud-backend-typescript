@@ -24,7 +24,7 @@ export default {
             logs: "logs",
         },
         job: {
-            executionCommand: "/app/src/slurm.sh",
+            executionCommand: "./src/slurm.sh",
             outDirectories: {
                 downloads: "./src/downloads",
                 reports: "./src/reports",
