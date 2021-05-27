@@ -116,22 +116,17 @@ services:
         build: .
         container_name: backend
         network_mode: "host"
-        pid: "host"
-        ipc: "host"
-        tty: true
         privileged: true
         volumes:
-            - /var/:/var/
-            - /usr/:/usr/
-            - /slurm/:/slurm/
+            - $SSH_AUTH_SOCK:/ssh-agent # Forward local machine SSH key to docker
             - /apps:/apps
             - ./src/openlane-run.sh:/app/src/openlane-run.sh
             - ./src/openlane-job.sh:/app/src/openlane-job.sh
             - ./src/slurm.sh:/app/src/slurm.sh
             - ./src/downloads:/app/src/downloads
             - ./src/reports:/app/src/reports
-        ports:
-            - "3030:3030"
+        environment:
+            SSH_AUTH_SOCK: /ssh-agent
         depends_on:
             - redis
             - kafka1
