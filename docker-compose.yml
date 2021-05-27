@@ -118,6 +118,7 @@ services:
         network_mode: "host"
         privileged: true
         volumes:
+            - ~/.ssh:/home/user/.ssh:ro
             - /apps:/apps
             - ./src/openlane-run.sh:/app/src/openlane-run.sh
             - ./src/openlane-job.sh:/app/src/openlane-job.sh

@@ -11,7 +11,6 @@ RUN apt-get update \
       && rm -rf /var/lib/apt/lists/*
 RUN apt install openssh-client
 RUN npm install pm2 -g
-
 #copy all the files
 COPY . .
 
@@ -22,6 +21,11 @@ RUN npm run build
 # container port
 EXPOSE 3030
 
+RUN useradd -m user
+RUN mkdir -p /home/user/.ssh
+RUN chown -R user:user /home/user/.ssh
+RUN echo "Host *.trabe.io\n\tStrictHostKeyChecking no\n" >> /home/user/.ssh/config
+USER user
 # run on cointainer start command
 CMD ["pm2-runtime", "build/src/server.js"]
 
