@@ -118,6 +118,7 @@ services:
 #        volumes:
 #            - /apps:/apps
 #            - ./src/openlane-run.sh:/app/src/openlane-run.sh
+#            - ./src/openlane-run.sh:/app/src/openlane-run.sh
 #            - ./src/openlane-job.sh:/app/src/openlane-job.sh
 #            - ./src/slurm.sh:/app/src/slurm.sh
 #            - ./src/downloads:/app/src/downloads
