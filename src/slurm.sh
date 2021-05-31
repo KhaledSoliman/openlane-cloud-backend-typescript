@@ -1,33 +1,25 @@
 #!/usr/bin/env bash
 #--chdir
-#for arg do
-#  shift
-#  [ "$arg" = "-inf" ] && continue
-#  set -- "$@" "$arg"
-#done
-
-while [ $# -gt 0 ]; do
-  case "$1" in
+for i in "$@"; do
+    case $i in
     --tag=*)
-      tag="${1#*=}"
-      ;;
+    tag="${i#*=}"
+    ;;
     --design-name=*)
-      design_name="${1#*=}"
-      ;;
-    --regression-script=*)
-      regression_script="${1#*=}"
-      ;;
+    design_name="${i#*=}"
+    ;;
     --threads=*)
-      threads="${1#*=}"
-      ;;
+    threads="${i#*=}"
+    ;;
     --cpus=*)
-      cpus="${1#*=}"
-      ;;
+    cpus="${i#*=}"
+    ;;
     --memory=*)
-      memory="${1#*=}"
-      ;;
-  esac
-  shift
+    memory="${i#*=}"
+    ;;
+    *)
+    ;;
+esac
 done
 
 sbatch --job-name="$design_name"-"$tag" --output=slurm-"$tag".out --nodes=1 -t00:50:00 ./src/openlane-job.sh --cb=https://storage.googleapis.com/copper-array-312208-singularity --ob=gs://copper-array-312208-singularity-job-out "$@"
