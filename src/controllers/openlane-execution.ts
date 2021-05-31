@@ -6,7 +6,7 @@ export const openlaneExecutionController = async (data) => {
 
     const openlaneExecution = await OpenlaneExecution.getInstance();
 
-    await database()["job"].update({status: "running"}, {where: {id: jobDetails.id}});
+    await database()["job"].update({status: "scheduling"}, {where: {id: jobDetails.id}});
 
     const jobExecutionData = await openlaneExecution.runJob(jobDetails);
 

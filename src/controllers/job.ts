@@ -18,7 +18,7 @@ export const jobController = async (req, res) => {
     const jobService = await Job.getInstance();
     const job = await jobService.createJob(userUUID, jobDetails);
     await jobService.publish(job)
-        .then(() => logger.info(`Job Service:: Published New Job [${job.id}]`));
+        .then(() => logger.info(`Job Service:: Published new job [${job.id}]`));
     res.status(statusCode.CREATED_201).send();
 };
 

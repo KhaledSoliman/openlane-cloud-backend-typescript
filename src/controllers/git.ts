@@ -10,7 +10,7 @@ export const gitController = async (data) => {
     await database()["job"].update({status: "cloning"}, {where: {id: jobDetails.id}});
 
     await git.cloneRepo(jobDetails.repoURL, jobDetails.id, jobDetails.designName)
-        .then(() => logger.info("Cloning Done"));
+        .then(() => logger.info(`Git Service:: Cloned job design directory [${jobDetails.id}]`));
 
     jobDetails = await database()["job"].findByPk(jobDetails.id);
 

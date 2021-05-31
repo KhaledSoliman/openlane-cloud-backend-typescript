@@ -1,4 +1,5 @@
 import {
+
     Model,
     HasManyGetAssociationsMixin,
     HasManyAddAssociationMixin,
@@ -107,7 +108,10 @@ export function JobModel(sequelize, DataTypes) {
             },
             status: {
                 type: DataTypes.ENUM(
-                    "submitted",
+                    "published",
+                    "preparing-workflow",
+                    "cloning",
+                    "scheduling",
                     "scheduled",
                     "running",
                     "archiving",
@@ -116,7 +120,7 @@ export function JobModel(sequelize, DataTypes) {
                     "stopped",
                     "failed"
                 ),
-                defaultValue: "submitted"
+                defaultValue: "published"
             },
             completedAt: {
                 type: DataTypes.DATE,

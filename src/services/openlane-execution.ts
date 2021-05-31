@@ -1,7 +1,7 @@
 import { logger, MicroService, database, config } from "../utils";
 import * as shell from "shelljs";
 import * as fs from "fs";
-
+import watch from "node-watch";
 /**
  * @class ResourceService
  * @classdesc Resource service responsible for running and managing already running jobs
@@ -114,7 +114,6 @@ export default class OpenlaneExecution extends MicroService {
 
         // Execute Child Process
         logger.info(`Executing openlane ${jobDetails.type} shell script...`);
-        shell.ls();
         const childProcess = shell.exec(commandString, {silent: true, async: true});
 
         // Status Update Polling
@@ -136,15 +135,39 @@ export default class OpenlaneExecution extends MicroService {
         // Register event listeners on both err and out pipes
         logger.info(`Registering event listeners for Job: ${jobDetails.id}`);
 
-            // Out Pipe
-            // @ts-ignore
+        // Out Pipe
+        // @ts-ignore
         childProcess.stdout.on("data", (data) => {
-                // Log
-                logger.info(data);
-                // Stream
-                // self.jobMonitoring.send(jobDetails.userUUID, data);
-            });
+            // Log
+            logger.info(data);
+            // Stream
+            if (data.includes("submitted")) {
+                database()["job"].update({status: "scheduled"}, {where: {id: jobDetails.id}})
+                    .then(() => logger.info(`Job ${jobDetails.id} has been scheduled for execution with slurm`));
+            }
+            // self.jobMonitoring.send(jobDetails.userUUID, data);
+        });
 
+
+        const watcher = watch("./", { filter: f => `slurm-${tag}.out` === f });
+
+        watcher.on("change", function(evt, name) {
+            if (evt == "update") {
+                // on create or modify
+                logger.info(name);
+                // close
+                watcher.close();
+            }
+        });
+
+        watcher.on("error", function(err) {
+            logger.error(err);
+            // handle error
+        });
+
+        watcher.on("ready", function() {
+            // the watcher is ready to respond to changes
+        });
             // Err Pipe
             // @ts-ignore
         childProcess.stderr.on("data", function (data) {

@@ -39,7 +39,7 @@ export default class Job {
             type: jobDetails.type,
             pdkVariant: jobDetails.pdkVariant,
             notificationsEnabled: jobDetails.notificationsEnabled,
-            status: "submitted"
+            status: "published"
         });
 
         return job;

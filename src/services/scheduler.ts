@@ -38,7 +38,7 @@ export default class Scheduler extends MicroService {
          */
         this.queue.process(async function (job) {
             switch (job.data.status) {
-                case "scheduled":
+                case "preparing-workflow":
                     /**
                      * Next Stage: Cloning
                      */
@@ -47,12 +47,12 @@ export default class Scheduler extends MicroService {
                     break;
                 case "cloning":
                     /**
-                     * Next Stage: running
+                     * Next Stage: Scheduling
                      */
                     await self.publish("resources-in", job.data)
-                        .then(() => logger.info(`Stage: Running | Job: ${job.data.id}`));
+                        .then(() => logger.info(`Stage: Scheduling | Job: ${job.data.id}`));
                     break;
-                case "running":
+                case "Scheduled":
                     /**
                      * Next Stage: archiving
                      */
@@ -113,7 +113,7 @@ export default class Scheduler extends MicroService {
          * Register Job Event Listeners
          */
         job.on("succeeded", async (stopped) => {
-            logger.info("Scheduler:: Stage Done");
+            logger.info("Scheduler Service:: Stage Done");
         });
 
         job.on("failed", async (result) => {
