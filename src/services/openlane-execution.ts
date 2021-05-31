@@ -132,6 +132,7 @@ export default class OpenlaneExecution extends MicroService {
         // Initialize watcher.
         const watcher = chokidar.watch(".", {
             persistent: true,
+            usePolling: true,
             depth: 0,
         });
 
@@ -143,10 +144,7 @@ export default class OpenlaneExecution extends MicroService {
             .on("addDir", path => logger.info(`Directory ${path} has been added`))
             .on("add", path => logger.info(`File ${path} has been added`))
             .on("change", path => logger.info(`File ${path} has been changed`))
-            .on("unlink", path => logger.info(`File ${path} has been removed`))
-            .on("raw", (event, path, details) => { // internal
-                logger.info("Raw event info:", event, path, details);
-            });
+            .on("unlink", path => logger.info(`File ${path} has been removed`));
 
         await new Promise(resolve => {
             watcher.on("ready", () => {
