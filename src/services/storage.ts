@@ -1,4 +1,4 @@
-import { MicroService, config } from "../utils";
+import { MicroService, config, logger } from "../utils";
 import * as fs from "fs";
 import * as archiver from "archiver";
 import * as shell from "shelljs";
@@ -27,7 +27,7 @@ export default class Storage extends MicroService {
                 const runPath = `${this.config.path}/${this.config.directories.designs}/${jobDetails.id}-${jobDetails.designName}/${this.config.directories.runs}/${jobDetails.executionData.runs[i].name}`;
                 await this.zip(
                     runPath,
-                    `./${this.config.job.outDirectories.downloads}/${jobDetails.userUUID}-${jobDetails.id}-${jobDetails.executionData.runs[i].name}.zip`
+                    `${this.config.job.outDirectories.downloads}/${jobDetails.userUUID}-${jobDetails.id}-${jobDetails.executionData.runs[i].name}.zip`
                 );
                 shell.exec(`rm -rf ${runPath}`);
             }
@@ -35,7 +35,7 @@ export default class Storage extends MicroService {
             if (jobDetails.type === "exploratory")
                 shell.exec(`rm -rf ${this.config.path}/${this.config.directories.scripts}/${jobDetails.executionData.tag}-regression.config`);
 
-            shell.exec(`mv ${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ./${this.config.job.outDirectories.reports}/${jobDetails.id}.csv`);
+            shell.exec(`mv ${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ${this.config.job.outDirectories.reports}/${jobDetails.id}.csv`);
 
             resolve();
         });
@@ -47,17 +47,17 @@ export default class Storage extends MicroService {
             zlib: {level: 9} // Sets the compression level.
         });
         output.on("close", function () {
-            // logger.info(archive.pointer() + " total bytes");
-            // logger.info("archiver has been finalized and the output file descriptor has closed.");
+            logger.info(archive.pointer() + " total bytes");
+            logger.info("archiver has been finalized and the output file descriptor has closed.");
         });
         output.on("end", function () {
-            // logger.info("Data has been drained");
+          logger.info("Data has been drained");
         });
         archive.on("warning", function (err) {
-            // logger.error(err);
+           logger.error(err);
         });
         archive.on("error", function (err) {
-            // logger.error(err);
+           logger.error(err);
         });
         archive.pipe(output);
         await archive.directory(inputPath, false).finalize();
