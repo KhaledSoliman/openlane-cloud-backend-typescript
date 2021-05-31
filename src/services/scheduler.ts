@@ -113,7 +113,7 @@ export default class Scheduler extends MicroService {
          * Register Job Event Listeners
          */
         job.on("succeeded", async (stopped) => {
-            logger.info("Scheduler Service:: Stage Done");
+            logger.info("Scheduler Service:: Finished Step");
         });
 
         job.on("failed", async (result) => {

@@ -141,7 +141,7 @@ export default class OpenlaneExecution extends MicroService {
                         });
                         const job = self.jobs.get(jobDetails.id);
                         for await (const line of rl) {
-                            if (line.includes("running") && !job.running) {
+                            if (line.includes("running") && job && !job.running) {
                                 database()["job"].update({status: "running"}, {where: {id: jobDetails.id}})
                                     .then(() => logger.info(`Job ${jobDetails.id} is running and has started execution`));
 
@@ -158,10 +158,7 @@ export default class OpenlaneExecution extends MicroService {
                                     self.jobs.set(jobDetails.id, job);
                                     logger.info(`Run ${keywords[1]} has started at ${run.createdAt}`);
                                 });
-                            } else if (line.includes("finished")) {
-                                // Stop watching log file
-                                await watcher.close();
-
+                            } else if (line.includes("finished") && job) {
                                 const completedAt = new Date().getTime();
                                 const keywords = line.split("] ")[1].split(" ");
                                 database()["run"].update({status: "completed", completedAt: completedAt}, {
@@ -220,7 +217,7 @@ export default class OpenlaneExecution extends MicroService {
                                     where: {
                                         jobId: jobDetails.id,
                                         name: keywords[1],
-                                        status: {$not: "completed"}
+                                        status: {[Op.ne]: "completed"}
                                     }
                                 }).then((result) => {
                                     if (result[0])
@@ -229,10 +226,10 @@ export default class OpenlaneExecution extends MicroService {
                             } else if (line.includes("Done") && job) {
                                 // Stop watching log file
                                 await watcher.close();
-
                                 const job = self.jobs.get(jobDetails.id);
                                 clearInterval(job.intervalId);
                                 this.jobs.delete(jobDetails.id);
+                                resolve(job);
                             }
                         }
                     }

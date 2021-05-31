@@ -38,7 +38,6 @@ export default class Consumer extends EventEmitter {
     initializeDriver() {
         return new Promise((resolve, reject) => {
             this.consumer.on("connect", () => {
-                logger.info(`KAFKA_CONSUMERS :: Ready for subscribing`);
                 this.emit(constants.EventEnums.CONNECTION_SUCCESS);
                 resolve();
             });
