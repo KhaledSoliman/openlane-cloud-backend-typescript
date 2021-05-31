@@ -113,9 +113,40 @@ export default class OpenlaneExecution extends MicroService {
         const commandString = this.RunCommandStringFactory(tag, jobDetails);
         logger.info(`Command string: ${commandString}`);
 
-        // Execute Child Process
+        const watcher = watch("./", {
+            filter: f => {
+                logger.info(f);
+                return `slurm-${tag}.out` === f;
+            }
+        });
+
+        watcher.on("change", function (evt, name) {
+            if (evt == "update") {
+                // on create or modify
+                logger.info(name);
+                // close
+                // watcher.close();
+            }
+        });
+
+        watcher.on("error", function (err) {
+            logger.error(err);
+            // handle error
+        });
+
+        await new Promise(resolve => {
+            watcher.on("ready", function () {
+                // the watcher is ready to respond to changes
+                logger.info("Directory watcher Ready...");
+                resolve();
+            });
+        });
+
+
         logger.info(`Executing openlane ${jobDetails.type} shell script...`);
         const childProcess = shell.exec(commandString, {silent: true, async: true});
+
+
 
         // Status Update Polling
         logger.info(`Starting run status update polling...`);
@@ -150,30 +181,7 @@ export default class OpenlaneExecution extends MicroService {
         });
 
 
-        const watcher = watch("./", {
-            filter: f => {
-                logger.info(f);
-                return `slurm-${tag}.out` === f;
-            }
-        });
 
-        watcher.on("change", function (evt, name) {
-            if (evt == "update") {
-                // on create or modify
-                logger.info(name);
-                // close
-                // watcher.close();
-            }
-        });
-
-        watcher.on("error", function (err) {
-            logger.error(err);
-            // handle error
-        });
-
-        watcher.on("ready", function () {
-            // the watcher is ready to respond to changes
-        });
         // Err Pipe
         // @ts-ignore
         childProcess.stderr.on("data", function (data) {
