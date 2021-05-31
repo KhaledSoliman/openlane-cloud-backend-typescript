@@ -2,6 +2,7 @@ import { logger, MicroService, database, config } from "../utils";
 import * as shell from "shelljs";
 import * as fs from "fs";
 import watch from "node-watch";
+
 /**
  * @class ResourceService
  * @classdesc Resource service responsible for running and managing already running jobs
@@ -141,7 +142,7 @@ export default class OpenlaneExecution extends MicroService {
             // Log
             logger.info(data);
             // Stream
-            if (data.includes("submitted")) {
+            if (data.toLowerCase().includes("submitted")) {
                 database()["job"].update({status: "scheduled"}, {where: {id: jobDetails.id}})
                     .then(() => logger.info(`Job ${jobDetails.id} has been scheduled for execution with slurm`));
             }
@@ -149,9 +150,14 @@ export default class OpenlaneExecution extends MicroService {
         });
 
 
-        const watcher = watch("./", { filter: f => `slurm-${tag}.out` === f });
+        const watcher = watch("./", {
+            filter: f => {
+                logger.info(f);
+                return `slurm-${tag}.out` === f;
+            }
+        });
 
-        watcher.on("change", function(evt, name) {
+        watcher.on("change", function (evt, name) {
             if (evt == "update") {
                 // on create or modify
                 logger.info(name);
@@ -160,46 +166,46 @@ export default class OpenlaneExecution extends MicroService {
             }
         });
 
-        watcher.on("error", function(err) {
+        watcher.on("error", function (err) {
             logger.error(err);
             // handle error
         });
 
-        watcher.on("ready", function() {
+        watcher.on("ready", function () {
             // the watcher is ready to respond to changes
         });
-            // Err Pipe
-            // @ts-ignore
+        // Err Pipe
+        // @ts-ignore
         childProcess.stderr.on("data", function (data) {
-                // Log
-                logger.info(data);
-                // Stream
-                // self.jobMonitoring.send(jobDetails.userUUID, data);
-                // Scan for runs
-                if (data.includes("running")) {
-                    const keywords = data.split("] ")[1].split(" ");
-                    database()["run"].create({
+            // Log
+            logger.error(data);
+            // Stream
+            // self.jobMonitoring.send(jobDetails.userUUID, data);
+            // Scan for runs
+            if (data.includes("running")) {
+                const keywords = data.split("] ")[1].split(" ");
+                database()["run"].create({
+                    jobId: jobDetails.id,
+                    name: keywords[1],
+                    status: "running"
+                }).then((run) => {
+                    run.currentStage = -1;
+                    const job = self.jobs.get(jobDetails.id);
+                    job.runs.push(run);
+                    self.jobs.set(jobDetails.id, job);
+                    logger.info(`Run ${keywords[1]} has started at ${run.createdAt}`);
+                });
+            } else if (data.includes("finished")) {
+                const completedAt = new Date().getTime();
+                const keywords = data.split("] ")[1].split(" ");
+                database()["run"].update({status: "completed", completedAt: completedAt}, {
+                    where: {
                         jobId: jobDetails.id,
                         name: keywords[1],
-                        status: "running"
-                    }).then((run) => {
-                        run.currentStage = -1;
-                        const job = self.jobs.get(jobDetails.id);
-                        job.runs.push(run);
-                        self.jobs.set(jobDetails.id, job);
-                        logger.info(`Run ${keywords[1]} has started at ${run.createdAt}`);
-                    });
-                } else if (data.includes("finished")) {
-                    const completedAt = new Date().getTime();
-                    const keywords = data.split("] ")[1].split(" ");
-                    database()["run"].update({status: "completed", completedAt: completedAt}, {
-                        where: {
-                            jobId: jobDetails.id,
-                            name: keywords[1],
-                        }
-                    }).then(() => logger.info(`Run ${keywords[1]} has completed at ${completedAt}`));
-                }
-            });
+                    }
+                }).then(() => logger.info(`Run ${keywords[1]} has completed at ${completedAt}`));
+            }
+        });
 
 
         // Exit Listener
