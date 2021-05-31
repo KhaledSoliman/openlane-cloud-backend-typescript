@@ -14,11 +14,11 @@ export const openlaneExecutionController = async (data) => {
         raw: true
     });
 
-    console.dir(jobExecutionData);
+    // console.dir(jobExecutionData);
 
     jobDetails.executionData = jobExecutionData;
 
-    console.dir(jobDetails);
+    // console.dir(jobDetails);
 
-    // await openlaneExecution.publish("resources-out", jobDetails);
+    await openlaneExecution.publish("resources-out", jobDetails);
 };
