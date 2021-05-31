@@ -112,39 +112,30 @@ export default class OpenlaneExecution extends MicroService {
         logger.info("Constructing args for shell script...");
         const commandString = this.RunCommandStringFactory(tag, jobDetails);
         logger.info(`Command string: ${commandString}`);
-
-        // const watcher = watch("./", {
-        //     filter: f => {
-        //         logger.info(f);
-        //         return `slurm-${tag}.out` === f;
-        //     }
-        // });
-        //
-        // watcher.on("change", function (evt, name) {
-        //     if (evt == "update") {
-        //         // on create or modify
-        //         logger.info(name);
-        //         // close
-        //         // watcher.close();
-        //     }
-        // });
-
         // Initialize watcher.
         const watcher = chokidar.watch(".", {
             persistent: true,
             usePolling: true,
+            alwaysStat: true,
             depth: 0,
         });
 
 
-// Add event listeners.
+        // Add watcher event listeners.
         watcher
             .on("error", error => logger.info(`Watcher error: ${error}`))
-            .on("unlinkDir", path => logger.info(`Directory ${path} has been removed`))
-            .on("addDir", path => logger.info(`Directory ${path} has been added`))
-            .on("add", path => logger.info(`File ${path} has been added`))
-            .on("change", path => logger.info(`File ${path} has been changed`))
-            .on("unlink", path => logger.info(`File ${path} has been removed`));
+            .on("add", async path => {
+                logger.info(`Directory Watcher:: File ${path} has been added`);
+                if (path === `slurm-${tag}.out`) {
+                    await watcher.unwatch(".");
+                    watcher.add(path);
+                }
+            })
+            .on("change", async (path, stats) => {
+                logger.info(`File ${path} has been changed`);
+                logger.info(stats);
+                await watcher.close();
+            });
 
         await new Promise(resolve => {
             watcher.on("ready", () => {
@@ -154,18 +145,6 @@ export default class OpenlaneExecution extends MicroService {
                 resolve();
             });
         });
-//
-// // Watch new files.
-//         watcher.add("new-file");
-//         watcher.add(["new-file-2", "new-file-3", "**/other-file*"]);
-// // Get list of actual paths being watched on the filesystem
-//         let watchedPaths = watcher.getWatched();
-// // Un-watch some files.
-//         await watcher.unwatch("new-file*");
-//
-// // Stop watching.
-// // The method is async!
-//         watcher.close().then(() => console.log("closed"));
 
         logger.info(`Executing openlane ${jobDetails.type} shell script...`);
         const childProcess = shell.exec(commandString, {silent: true, async: true});
