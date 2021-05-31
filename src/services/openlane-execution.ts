@@ -2,6 +2,7 @@ import { logger, MicroService, database, config } from "../utils";
 import * as shell from "shelljs";
 import * as fs from "fs";
 import * as chokidar from "chokidar";
+import * as readline from "readline";
 
 /**
  * @class ResourceService
@@ -112,6 +113,7 @@ export default class OpenlaneExecution extends MicroService {
         logger.info("Constructing args for shell script...");
         const commandString = this.RunCommandStringFactory(tag, jobDetails);
         logger.info(`Command string: ${commandString}`);
+
         // Initialize watcher.
         const watcher = chokidar.watch(".", {
             persistent: true,
@@ -121,22 +123,105 @@ export default class OpenlaneExecution extends MicroService {
             depth: 0,
         });
 
-
         // Add watcher event listeners.
         watcher
             .on("error", error => logger.info(`Watcher error: ${error}`))
             .on("add", async path => {
-                logger.info(`Directory Watcher:: File ${path} has been added`);
                 if (path === `slurm-${tag}.out`) {
+                    logger.info(`Directory Watcher:: File ${path} has been added`);
                     await watcher.unwatch(".");
                     watcher.add(path);
+
+                    const fileStream = fs.createReadStream(path);
+                    const rl = readline.createInterface({
+                        input: fileStream,
+                        crlfDelay: Infinity
+                    });
+                    const job = self.jobs.get(jobDetails.id);
+                    for await (const line of rl) {
+                        if (line.includes("running") && !job.running) {
+                            database()["job"].update({status: "running"}, {where: {id: jobDetails.id}})
+                                .then(() => logger.info(`Job ${jobDetails.id} is running and has started execution`));
+
+                            const keywords = line.split("] ")[1].split(" ");
+                            database()["run"].create({
+                                jobId: jobDetails.id,
+                                name: keywords[1],
+                                status: "running"
+                            }).then((run) => {
+                                run.currentStage = -1;
+                                const job = self.jobs.get(jobDetails.id);
+                                job.runs.push(run);
+                                job.running = true;
+                                self.jobs.set(jobDetails.id, job);
+                                logger.info(`Run ${keywords[1]} has started at ${run.createdAt}`);
+                            });
+                        } else if (line.includes("finished")) {
+                            // Stop watching log file
+                            await watcher.close();
+
+                            const completedAt = new Date().getTime();
+                            const keywords = line.split("] ")[1].split(" ");
+                            database()["run"].update({status: "completed", completedAt: completedAt}, {
+                                where: {
+                                    jobId: jobDetails.id,
+                                    name: keywords[1],
+                                    status: {$not: "completed"}
+                                }
+                            }).then((result) => {
+                                if (result[0])
+                                    logger.info(`Run ${keywords[1]} has completed at ${completedAt}`);
+                            });
+                        }
+                    }
                 }
             })
-            .on("change", async (path, stats) => {
+            .on("change", async (path) => {
                 if (path === `slurm-${tag}.out`) {
-                    logger.info(`File ${path} has been changed`);
-                    console.dir(stats);
-                    await watcher.close();
+                    logger.info(`Directory Watcher:: File ${path} has been changed`);
+
+                    const fileStream = fs.createReadStream(path);
+                    const rl = readline.createInterface({
+                        input: fileStream,
+                        crlfDelay: Infinity
+                    });
+                    const job = self.jobs.get(jobDetails.id);
+                    for await (const line of rl) {
+                        if (line.includes("running") && !job.running) {
+                            database()["job"].update({status: "running"}, {where: {id: jobDetails.id}})
+                                .then(() => logger.info(`Job ${jobDetails.id} is running and has started execution`));
+
+                            const keywords = line.split("] ")[1].split(" ");
+                            database()["run"].create({
+                                jobId: jobDetails.id,
+                                name: keywords[1],
+                                status: "running"
+                            }).then((run) => {
+                                run.currentStage = -1;
+                                const job = self.jobs.get(jobDetails.id);
+                                job.runs.push(run);
+                                job.running = true;
+                                self.jobs.set(jobDetails.id, job);
+                                logger.info(`Run ${keywords[1]} has started at ${run.createdAt}`);
+                            });
+                        } else if (line.includes("finished")) {
+                            // Stop watching log file
+                            await watcher.close();
+
+                            const completedAt = new Date().getTime();
+                            const keywords = line.split("] ")[1].split(" ");
+                            database()["run"].update({status: "completed", completedAt: completedAt}, {
+                                where: {
+                                    jobId: jobDetails.id,
+                                    name: keywords[1],
+                                    status: {$not: "completed"}
+                                }
+                            }).then((result) => {
+                                if (result[0])
+                                    logger.info(`Run ${keywords[1]} has completed at ${completedAt}`);
+                            });
+                        }
+                    }
                 }
             });
 
@@ -166,6 +251,7 @@ export default class OpenlaneExecution extends MicroService {
             tag: tag,
             stopped: false,
             runs: [],
+            running: false,
             intervalId: intervalId
         });
 
@@ -177,46 +263,26 @@ export default class OpenlaneExecution extends MicroService {
         childProcess.stdout.on("data", (data) => {
             // Log
             logger.info(data);
-            // Stream
+
             if (data.toLowerCase().includes("submitted")) {
                 database()["job"].update({status: "scheduled"}, {where: {id: jobDetails.id}})
                     .then(() => logger.info(`Job ${jobDetails.id} has been scheduled for execution with slurm`));
             }
-            // self.jobMonitoring.send(jobDetails.userUUID, data);
-        });
 
-
-        // Err Pipe
-        // @ts-ignore
-        childProcess.stderr.on("data", function (data) {
-            // Log
-            logger.error(data);
             // Stream
             // self.jobMonitoring.send(jobDetails.userUUID, data);
-            // Scan for runs
-            if (data.includes("running")) {
-                const keywords = data.split("] ")[1].split(" ");
-                database()["run"].create({
-                    jobId: jobDetails.id,
-                    name: keywords[1],
-                    status: "running"
-                }).then((run) => {
-                    run.currentStage = -1;
-                    const job = self.jobs.get(jobDetails.id);
-                    job.runs.push(run);
-                    self.jobs.set(jobDetails.id, job);
-                    logger.info(`Run ${keywords[1]} has started at ${run.createdAt}`);
-                });
-            } else if (data.includes("finished")) {
-                const completedAt = new Date().getTime();
-                const keywords = data.split("] ")[1].split(" ");
-                database()["run"].update({status: "completed", completedAt: completedAt}, {
-                    where: {
-                        jobId: jobDetails.id,
-                        name: keywords[1],
-                    }
-                }).then(() => logger.info(`Run ${keywords[1]} has completed at ${completedAt}`));
-            }
+        });
+        // Err Pipe
+        // @ts-ignore
+        childProcess.stderr.on("data", function (err) {
+            // Log
+            logger.error(err);
+
+            database()["job"].update({status: "failed"}, {where: {id: jobDetails.id}})
+                .then(() => logger.info(`Job ${jobDetails.id} has been marked as failed`));
+
+            // Stream
+            // self.jobMonitoring.send(jobDetails.userUUID, data);
         });
 
 
