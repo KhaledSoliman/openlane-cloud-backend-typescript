@@ -25,17 +25,18 @@ export default class Storage extends MicroService {
         return new Promise(async (resolve) => {
             for (let i = 0; i < jobDetails.executionData.runs.length; i++) {
                 const runPath = `${this.config.path}/${this.config.directories.designs}/${jobDetails.id}-${jobDetails.designName}/${this.config.directories.runs}/${jobDetails.executionData.runs[i].name}`;
+                console.log(runPath);
                 await this.zip(
                     runPath,
                     `${this.config.job.outDirectories.downloads}/${jobDetails.userUUID}-${jobDetails.id}-${jobDetails.executionData.runs[i].name}.zip`
                 );
-                shell.exec(`rm -rf ${runPath}`);
+                shell.exec(`sudo rm -rf ${runPath}`);
             }
 
             if (jobDetails.type === "exploratory")
-                shell.exec(`rm -rf ${this.config.path}/${this.config.directories.scripts}/${jobDetails.executionData.tag}-regression.config`);
+                shell.exec(`sudo rm -rf ${this.config.path}/${this.config.directories.scripts}/${jobDetails.executionData.tag}-regression.config`);
 
-            shell.exec(`mv ${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ${this.config.job.outDirectories.reports}/${jobDetails.id}.csv`);
+            shell.exec(`sudo mv ${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ${this.config.job.outDirectories.reports}/${jobDetails.id}.csv`);
 
             resolve();
         });
