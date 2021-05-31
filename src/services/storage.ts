@@ -24,7 +24,7 @@ export default class Storage extends MicroService {
     async archive(jobDetails) {
         return new Promise(async (resolve) => {
             for (let i = 0; i < jobDetails.executionData.runs.length; i++) {
-                const runPath = `./${this.config.path}/${this.config.directories.designs}/${jobDetails.id}-${jobDetails.designName}/${this.config.directories.runs}/${jobDetails.executionData.runs[i].name}`;
+                const runPath = `${this.config.path}/${this.config.directories.designs}/${jobDetails.id}-${jobDetails.designName}/${this.config.directories.runs}/${jobDetails.executionData.runs[i].name}`;
                 await this.zip(
                     runPath,
                     `./${this.config.job.outDirectories.downloads}/${jobDetails.userUUID}-${jobDetails.id}-${jobDetails.executionData.runs[i].name}.zip`
@@ -35,7 +35,7 @@ export default class Storage extends MicroService {
             if (jobDetails.type === "exploratory")
                 shell.exec(`rm -rf ${this.config.path}/${this.config.directories.scripts}/${jobDetails.executionData.tag}-regression.config`);
 
-            shell.exec(`mv ./${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ./${this.config.job.outDirectories.reports}/${jobDetails.id}.csv`);
+            shell.exec(`mv ${this.config.path}/${this.config.directories.regressionResults}/${jobDetails.executionData.tag}/${jobDetails.executionData.tag}.csv ./${this.config.job.outDirectories.reports}/${jobDetails.id}.csv`);
 
             resolve();
         });
