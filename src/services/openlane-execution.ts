@@ -117,6 +117,7 @@ export default class OpenlaneExecution extends MicroService {
             persistent: true,
             usePolling: true,
             alwaysStat: true,
+            ignoreInitial: true,
             depth: 0,
         });
 
@@ -132,9 +133,11 @@ export default class OpenlaneExecution extends MicroService {
                 }
             })
             .on("change", async (path, stats) => {
-                logger.info(`File ${path} has been changed`);
-                logger.info(stats);
-                await watcher.close();
+                if (path === `slurm-${tag}.out`) {
+                    logger.info(`File ${path} has been changed`);
+                    console.dir(stats);
+                    await watcher.close();
+                }
             });
 
         await new Promise(resolve => {
