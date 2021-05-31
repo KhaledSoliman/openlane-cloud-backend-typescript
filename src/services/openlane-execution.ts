@@ -162,7 +162,7 @@ export default class OpenlaneExecution extends MicroService {
                 // on create or modify
                 logger.info(name);
                 // close
-                watcher.close();
+                // watcher.close();
             }
         });
 
