@@ -78,7 +78,7 @@ export default class Scheduler extends MicroService {
                 default:
                     throw new Error("Undefined Job Stage");
             }
-            return "wtf";
+            return ;
             // if (job.data.notificationsEnabled) {
             //     self.notification.sendPushNotification("Job Scheduler", "Your job repository is currently being cloned", job.data.regToken);
             // }

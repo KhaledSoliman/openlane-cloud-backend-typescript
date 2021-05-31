@@ -169,9 +169,10 @@ export default class OpenlaneExecution extends MicroService {
                                     }
                                 }).then((result) => {
                                     if (result[0])
-                                        logger.info(`Run ${keywords[1]} has completed at ${completedAt}`);
+                                        logger.info(`Run ${keywords[1]} has completed at ${completedAt.toLocaleString()}`);
                                 });
                             } else if (line.includes("Done") && job) {
+                                logger.info(`Execution of job ${jobDetails.id} has completed`);
                                 // Stop watching log file
                                 await watcher.close();
                                 const job = self.jobs.get(jobDetails.id);
