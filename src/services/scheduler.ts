@@ -52,7 +52,7 @@ export default class Scheduler extends MicroService {
                     await self.publish("resources-in", job.data)
                         .then(() => logger.info(`Stage: Scheduling | Job: ${job.data.id}`));
                     break;
-                case "Scheduled":
+                case "running":
                     /**
                      * Next Stage: archiving
                      */
@@ -120,8 +120,8 @@ export default class Scheduler extends MicroService {
             /**
              * Stage: Failed
              */
-            logger.error(`Failure result for job ${job.id}: ${result}`);
-            await database()["job"].update({status: "failed"}, {where: {jobId: job.id}});
+            logger.error(`Failure result for job ${jobDetails.id}}: ${result}`);
+            await database()["job"].update({status: "failed"}, {where: {id: jobDetails.id}});
         });
     }
 }
