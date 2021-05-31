@@ -116,8 +116,6 @@ export default class OpenlaneExecution extends MicroService {
         const watcher = chokidar.watch(".", {
             persistent: true,
             usePolling: true,
-            alwaysStat: true,
-            ignoreInitial: true,
             depth: 0,
         });
 
