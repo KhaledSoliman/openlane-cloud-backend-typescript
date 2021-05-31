@@ -115,28 +115,38 @@ export default class OpenlaneExecution extends MicroService {
         // Initialize watcher.
         const watcher = chokidar.watch(".", {
             persistent: true,
+            ignoreInitial: true,
             usePolling: true,
+            awaitWriteFinish: false,
             depth: 0,
         });
 
 
         // Add watcher event listeners.
-        watcher
-            .on("error", error => logger.info(`Watcher error: ${error}`))
-            .on("add", async path => {
-                logger.info(`Directory Watcher:: File ${path} has been added`);
-                if (path === `slurm-${tag}.out`) {
-                    await watcher.unwatch(".");
-                    watcher.add(path);
-                }
-            })
-            .on("change", async (path, stats) => {
-                if (path === `slurm-${tag}.out`) {
-                    logger.info(`File ${path} has been changed`);
-                    console.dir(stats);
-                    await watcher.close();
-                }
-            });
+        // watcher
+        //     .on("error", error => logger.info(`Watcher error: ${error}`))
+        //     .on("add", async path => {
+        //         logger.info(`Directory Watcher:: File ${path} has been added`);
+        //         if (path === `slurm-${tag}.out`) {
+        //             await watcher.unwatch(".");
+        //             watcher.add(path);
+        //         }
+        //     })
+        //     .on("change", async (path, stats) => {
+        //         if (path === `slurm-${tag}.out`) {
+        //             logger.info(`File ${path} has been changed`);
+        //             console.dir(stats);
+        //             await watcher.close();
+        //         }
+        //     });
+
+        watcher.on("raw", function(path, stats) {
+            console.log("[" + new Date() + "]  RAW: " + path + " -- " + (stats ? stats : ""));
+        });
+
+        watcher.on("all", function (ev, path, stats) {
+            console.log("[" + new Date() + "] " + ev + ": " + path + " -- " + (stats ? stats.size : ""));
+        });
 
         await new Promise(resolve => {
             watcher.on("ready", () => {
