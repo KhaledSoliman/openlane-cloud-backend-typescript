@@ -12,6 +12,8 @@ RUN apt-get update \
 RUN apt install openssh-client
 RUN npm install pm2 -g
 #copy all the files
+# a wildcard is used to ensure both package.json AND package-lock.json are copied
+# COPY package*.json ./
 COPY . .
 
 # install node dependency and build project

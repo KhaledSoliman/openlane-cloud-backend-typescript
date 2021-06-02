@@ -34,6 +34,6 @@ gulp.task('watch', () => {
 });
 
 // default tasks
-gulp.task('Outremona.ts', gulp.series('clean:build', 'build', 'watch'), () => {
-  console.log('Project successfully build');
-});
+// gulp.task('Outremona.ts', gulp.series('clean:build', 'build', 'watch'), () => {
+//   console.log('Project successfully build');
+// });
