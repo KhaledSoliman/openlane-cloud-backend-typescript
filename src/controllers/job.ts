@@ -17,6 +17,7 @@ export const jobController = async (req, res) => {
     const jobService = await Job.getInstance();
     let job = await jobService.createJob(userUUID, jobDetails);
     job = job.get({plain: true});
+
     if (jobDetails.regressionScript) {
         job.regressionScript = jobDetails.regressionScript;
         console.log(job);

@@ -14,6 +14,7 @@ export const gitController = async (data) => {
 
     let newJobDetails = await database()["job"].findByPk(jobDetails.id);
     newJobDetails = newJobDetails.get({plain: true});
+
     if (jobDetails.regressionScript) {
         newJobDetails.regressionScript = jobDetails.regressionScript;
         console.log(newJobDetails);
