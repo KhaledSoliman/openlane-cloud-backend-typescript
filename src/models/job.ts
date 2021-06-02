@@ -38,6 +38,7 @@ export class Job extends Model<JobAttributes, JobCreationAttributes>
     public type!: string;
     public notificationsEnabled!: boolean;
     public status!: string;
+    public slurmJobId!: number | null;
     public completedAt!: Date | null;
 
     public readonly createdAt!: Date;
@@ -121,6 +122,10 @@ export function JobModel(sequelize, DataTypes) {
                     "failed"
                 ),
                 defaultValue: "published"
+            },
+            slurmJobId: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
             },
             completedAt: {
                 type: DataTypes.DATE,

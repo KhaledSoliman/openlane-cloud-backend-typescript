@@ -278,11 +278,13 @@ export default class OpenlaneExecution extends MicroService {
 
                 if (data.toLowerCase().includes("submitted")) {
                     const slurmJobID = data.split(" ")[3];
+
+
                     const job = self.jobs.get(jobDetails.id);
                     job.slurmJobId = slurmJobID;
                     self.jobs.set(jobDetails.id, job);
 
-                    database()["job"].update({status: "scheduled"}, {where: {id: jobDetails.id}})
+                    database()["job"].update({status: "scheduled", slurmJobId: slurmJobID}, {where: {id: jobDetails.id}})
                         .then(() => logger.info(`Job ${jobDetails.id} has been scheduled for execution with slurm with ID ${slurmJobID}`));
                 }
 
@@ -316,7 +318,7 @@ export default class OpenlaneExecution extends MicroService {
                 logger.info(`Stopping Job #${jobId}`);
                 job.stopped = true;
                 this.jobs.set(jobId, job);
-                const childProcess = shell.exec(`docker stop ${job.tag}`, {
+                const childProcess = shell.exec(`scancel ${job.slurmJobId}`, {
                     silent: true,
                     async: true
                 });

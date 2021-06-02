@@ -3,6 +3,7 @@ set -x
 echo "$@"
 OPEN_LANE_PATH=/apps/openlane
 PDK_ROOT=/apps/openlane/pdks
+#export STD_CELL_LIBRARY=
 
 while [ $# -gt 0 ]; do
   case "$1" in
