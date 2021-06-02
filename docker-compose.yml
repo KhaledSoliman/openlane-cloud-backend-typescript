@@ -38,10 +38,10 @@ services:
             - 9090:9090
         links:
             - cadvisor:cadvisor
-            - prometheus-slurm-exporter:prometheus-slurm-exporter
+#            - prometheus-slurm-exporter:prometheus-slurm-exporter
         depends_on:
             - cadvisor
-            - prometheus-slurm-exporter
+#            - prometheus-slurm-exporter
         restart: always
 
     grafana:
@@ -77,24 +77,24 @@ services:
         deploy:
             mode: global
 
-    prometheus-slurm-exporter:
-        image: deepops/prometheus-slurm-exporter:latest
-        container_name: prometheus-slurm-exporter
-        userns_mode: "host"
-        privileged: true
-        volumes:
-            - /usr/local/bin/sdiag:/usr/local/bin/sdiag
-            - /usr/local/bin/sinfo:/usr/local/bin/sinfo
-            - /usr/local/bin/squeue:/usr/local/bin/squeue
-            - /etc:/etc:ro
-            - /usr/local/lib/slurm:/usr/local/lib/slurm:ro
-            - /etc/hosts:/etc/hosts:ro
-            - /var/run/munge:/var/run/munge:ro
-        ports:
-            - 8081:8080
-        restart: always
-        deploy:
-            mode: global
+#    prometheus-slurm-exporter:
+#        image: deepops/prometheus-slurm-exporter:latest
+#        container_name: prometheus-slurm-exporter
+#        userns_mode: "host"
+#        privileged: true
+#        volumes:
+#            - /usr/local/bin/sdiag:/usr/local/bin/sdiag
+#            - /usr/local/bin/sinfo:/usr/local/bin/sinfo
+#            - /usr/local/bin/squeue:/usr/local/bin/squeue
+#            - /etc:/etc:ro
+#            - /usr/local/lib/slurm:/usr/local/lib/slurm:ro
+#            - /etc/hosts:/etc/hosts:ro
+#            - /var/run/munge:/var/run/munge:ro
+#        ports:
+#            - 8081:8080
+#        restart: always
+#        deploy:
+#            mode: global
 
     zoo1:
         image: zookeeper:3.4.9
