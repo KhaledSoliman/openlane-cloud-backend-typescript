@@ -15,13 +15,14 @@ export const jobController = async (req, res) => {
     // TODO:Missing step validate repository
 
     const jobService = await Job.getInstance();
-    const job = await jobService.createJob(userUUID, jobDetails);
+    let job = await jobService.createJob(userUUID, jobDetails);
+    job = job.get({plain: true});
     if (jobDetails.regressionScript) {
         job.regressionScript = jobDetails.regressionScript;
         console.log(job);
     }
 
-    await jobService.publish(jobDetails)
+    await jobService.publish(job)
         .then(() => logger.info(`Job Service:: Published new job [${job.id}]`));
     res.status(statusCode.CREATED_201).send();
 };

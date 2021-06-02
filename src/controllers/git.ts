@@ -12,8 +12,8 @@ export const gitController = async (data) => {
     await git.cloneRepo(jobDetails.repoURL, jobDetails.id, jobDetails.designName)
         .then(() => logger.info(`Git Service:: Cloned job design directory [${jobDetails.id}]`));
 
-    const newJobDetails = await database()["job"].findByPk(jobDetails.id);
-
+    let newJobDetails = await database()["job"].findByPk(jobDetails.id);
+    newJobDetails = newJobDetails.get({plain: true});
     if (jobDetails.regressionScript) {
         newJobDetails.regressionScript = jobDetails.regressionScript;
         console.log(newJobDetails);
