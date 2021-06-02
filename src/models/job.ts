@@ -22,10 +22,11 @@ interface JobAttributes {
     pdkVariant: string;
     notificationsEnabled: boolean;
     status: string;
+    slurmJobId: number | null;
     completedAt: Date | null;
 }
 
-interface JobCreationAttributes extends Optional<JobAttributes, "id" | "type" | "pdkVariant" | "notificationsEnabled" | "status" | "completedAt"> {
+interface JobCreationAttributes extends Optional<JobAttributes, "id" | "type" | "pdkVariant" | "notificationsEnabled" | "status" | "slurmJobId" |"completedAt"> {
 }
 
 export class Job extends Model<JobAttributes, JobCreationAttributes>
