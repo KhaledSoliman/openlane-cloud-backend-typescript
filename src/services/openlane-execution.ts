@@ -252,14 +252,16 @@ export default class OpenlaneExecution extends MicroService {
             // Status Update Polling
             logger.info(`Starting run status update polling...`);
             const intervalId = setInterval(() => {
-                self.statusUpdate(jobDetails.id, jobDetails.designName);
+                self.statusUpdate(jobDetails.id, jobDetails.designName, resolve);
             }, 1000);
 
             // Save job to map
             logger.info(`Saving Job: ${jobDetails.id} to map`);
+
             this.jobs.set(jobDetails.id, {
                 process: childProcess,
                 tag: tag,
+                directoryWatcher: watcher,
                 stopped: false,
                 runs: [],
                 running: false,
@@ -284,7 +286,10 @@ export default class OpenlaneExecution extends MicroService {
                     job.slurmJobId = slurmJobID;
                     self.jobs.set(jobDetails.id, job);
 
-                    database()["job"].update({status: "scheduled", slurmJobId: slurmJobID}, {where: {id: jobDetails.id}})
+                    database()["job"].update({
+                        status: "scheduled",
+                        slurmJobId: slurmJobID
+                    }, {where: {id: jobDetails.id}})
                         .then(() => logger.info(`Job ${jobDetails.id} has been scheduled for execution with slurm with ID ${slurmJobID}`));
                 }
 
@@ -322,10 +327,11 @@ export default class OpenlaneExecution extends MicroService {
                     silent: true,
                     async: true
                 });
-                childProcess.on("exit", (c) => {
-                    // Send Notification
+                return new Promise(async resolve => {
+                    childProcess.on("exit", (c) => {
+                        resolve(result);
+                    });
                 });
-                return result;
             });
         } else {
             return -1;
@@ -336,38 +342,47 @@ export default class OpenlaneExecution extends MicroService {
      * Checks for stage changes for each run in this job
      * @param jobId
      * @param designName
+     * @param resolve
      */
-    statusUpdate(jobId, designName) {
+    statusUpdate(jobId, designName, resolve) {
         const self = this;
         const job = this.jobs.get(jobId);
         if (job) {
-            for (let i = 0; i < job.runs.length; i++) {
-                const scanDirectoryPath = `${this.config.path}/${this.config.directories.designs}/${jobId}-${designName}/${this.config.directories.runs}/${job.runs[i].name}/${this.config.directories.logs}/`;
+            if (job.stopped) {
+                const job = self.jobs.get(jobId);
+                job.directoryWatcher.close();
+                clearInterval(job.intervalId);
+                this.jobs.delete(jobId);
+                resolve(job);
+            } else {
+                for (let i = 0; i < job.runs.length; i++) {
+                    const scanDirectoryPath = `${this.config.path}/${this.config.directories.designs}/${jobId}-${designName}/${this.config.directories.runs}/${job.runs[i].name}/${this.config.directories.logs}/`;
 
-                // Skip iteration if the index of the current stage of the run is equal to the last stage index
-                if (job.runs[i].currentStage === (this.config.job.stages.length - 1))
-                    continue;
+                    // Skip iteration if the index of the current stage of the run is equal to the last stage index
+                    if (job.runs[i].currentStage === (this.config.job.stages.length - 1))
+                        continue;
 
-                // Scan the directory of the current stage for log files
-                fs.readdir(job.runs[i].currentStage === -1 ?
-                    scanDirectoryPath :
-                    scanDirectoryPath + this.config.job.stages[job.runs[i].currentStage], function (err, items) {
-                    // No directory yet
-                    if (err) {
-                        logger.error(err.message);
-                        return;
-                    }
-                    // First Stage
-                    if (items.length > 0) {
-                        job.runs[i].currentStage++;
-                        database()["run"].update({
-                            status: `running-${self.config.job.stages[job.runs[i].currentStage]}`
-                        }, {where: {id: job.runs[i].id}})
-                            .then(() => {
-                                self.jobs.set(jobId, job);
-                            });
-                    }
-                });
+                    // Scan the directory of the current stage for log files
+                    fs.readdir(job.runs[i].currentStage === -1 ?
+                        scanDirectoryPath :
+                        scanDirectoryPath + this.config.job.stages[job.runs[i].currentStage], function (err, items) {
+                        // No directory yet
+                        if (err) {
+                            logger.error(err.message);
+                            return;
+                        }
+                        // First Stage
+                        if (items.length > 0) {
+                            job.runs[i].currentStage++;
+                            database()["run"].update({
+                                status: `running-${self.config.job.stages[job.runs[i].currentStage]}`
+                            }, {where: {id: job.runs[i].id}})
+                                .then(() => {
+                                    self.jobs.set(jobId, job);
+                                });
+                        }
+                    });
+                }
             }
         }
     }
