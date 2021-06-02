@@ -179,6 +179,7 @@ export default class OpenlaneExecution extends MicroService {
                                 const job = self.jobs.get(jobDetails.id);
                                 clearInterval(job.intervalId);
                                 this.jobs.delete(jobDetails.id);
+                                job.directoryWatcher = undefined;
                                 resolve(job);
                             }
                         }
@@ -364,6 +365,7 @@ export default class OpenlaneExecution extends MicroService {
                 job.directoryWatcher.close();
                 clearInterval(job.intervalId);
                 this.jobs.delete(jobId);
+                job.directoryWatcher = undefined;
                 resolve(job);
             } else {
                 for (let i = 0; i < job.runs.length; i++) {
