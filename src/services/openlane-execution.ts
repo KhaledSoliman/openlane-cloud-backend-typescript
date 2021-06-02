@@ -279,7 +279,7 @@ export default class OpenlaneExecution extends MicroService {
                 logger.info(data);
 
                 if (data.toLowerCase().includes("submitted")) {
-                    const slurmJobID = data.split(" ")[3];
+                    const slurmJobID = parseInt(data.split(" ")[3].replace(/\n/g, ""), 10);
 
 
                     const job = self.jobs.get(jobDetails.id);
@@ -326,6 +326,16 @@ export default class OpenlaneExecution extends MicroService {
                 const childProcess = shell.exec(`scancel ${job.slurmJobId}`, {
                     silent: true,
                     async: true
+                });
+                // @ts-ignore
+                childProcess.stdout.on("data", (data) => {
+                    // Log
+                    logger.info(data);
+                });
+                // @ts-ignore
+                childProcess.stderr.on("data", (err) => {
+                    // Log
+                    logger.error(err);
                 });
                 return new Promise(async resolve => {
                     childProcess.on("exit", (c) => {
