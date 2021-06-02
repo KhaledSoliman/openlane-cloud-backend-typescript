@@ -263,6 +263,7 @@ export default class OpenlaneExecution extends MicroService {
                 stopped: false,
                 runs: [],
                 running: false,
+                slurmJobId: undefined,
                 intervalId: intervalId
             });
 
@@ -276,8 +277,13 @@ export default class OpenlaneExecution extends MicroService {
                 logger.info(data);
 
                 if (data.toLowerCase().includes("submitted")) {
+                    const slurmJobID = data.split(" ")[3];
+                    const job = self.jobs.get(jobDetails.id);
+                    job.slurmJobId = slurmJobID;
+                    self.jobs.set(jobDetails.id, job);
+
                     database()["job"].update({status: "scheduled"}, {where: {id: jobDetails.id}})
-                        .then(() => logger.info(`Job ${jobDetails.id} has been scheduled for execution with slurm`));
+                        .then(() => logger.info(`Job ${jobDetails.id} has been scheduled for execution with slurm with ID ${slurmJobID}`));
                 }
 
                 // Stream

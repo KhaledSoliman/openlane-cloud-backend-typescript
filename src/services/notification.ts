@@ -10,8 +10,8 @@ export default class Notification extends MicroService {
         this.transporter = nodeMailer.createTransport({
             service: "gmail",
             auth: {
-                user: "kingsonlineforsoftware@gmail.com",
-                pass: "Walid112358@"
+                user: "no-reply@openlane-cloud.com",
+                pass: process.env.MAILER_PASS
             }
         });
 
@@ -29,7 +29,7 @@ export default class Notification extends MicroService {
 
     sendMail(receiver, subject, body) {
         const mailOptions = {
-            from: "khaledsoli111@gmail.com",
+            from: "no-reply@openlane-cloud.com",
             to: receiver,
             subject: subject,
             text: body

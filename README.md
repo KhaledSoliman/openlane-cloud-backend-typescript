@@ -42,7 +42,10 @@ Running on localhost:2181. Used along with Kafka
 ## Running / Development & How to Use
 * make sure docker is running
 * `docker-compose up`
-* `npm run dev`
+* `npm install sqlite3`
+* `npm install`
+* `npm run build`
+* `pm2 start ./build/src/server.js`
 * wait for a minute so that all microservices are up and running. 
 When the backend is fully booted, you should see a log saying " BOOT :: <> <> <> <> <> <> <> <> <> <> Listening on 0.0.0.0:3030 <> <> <> <> <> <> <> <> <> <>
 ".

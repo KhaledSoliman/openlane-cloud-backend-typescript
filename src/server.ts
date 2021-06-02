@@ -4,6 +4,11 @@ dotenv.config();
 import startApp from "./boot";
 import { constants, logger, config } from "./utils";
 
+import * as mime from "mime";
+
+const file = "./gulpfile.js";
+console.log(mime.getType(file));
+
 // Enable newrelic if switch is on
 if (config.switches.new_relic && constants.ENV === constants.ENVIRONMENTS.prod) {
     require("newrelic");
