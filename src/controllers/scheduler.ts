@@ -3,14 +3,21 @@ import { logger, database } from "../utils";
 
 
 export const schedulerJobQueueController = async (data) => {
-    let jobDetails = JSON.parse(data.value).message;
+    const jobDetails = JSON.parse(data.value).message;
     const scheduler = await Scheduler.getInstance();
 
     await database()["job"].update({status: "preparing-workflow"}, {where: {id: jobDetails.id}});
 
-    jobDetails = await database()["job"].findByPk(jobDetails.id);
+    let job = await database()["job"].findByPk(jobDetails.id);
+    job = job.get({plain: true});
 
-    await scheduler.addJobToQueue(jobDetails)
+    if (jobDetails.regressionScript) {
+        job.regressionScript = jobDetails.regressionScript;
+        console.log(job);
+    }
+
+
+    await scheduler.addJobToQueue(job)
         .then(() => logger.info(`Scheduler Service:: Scheduled new job to enter workflow [${jobDetails.id}]`))
         .catch(async () => await database()["job"].update({status: "failed"}, {where: {id: jobDetails.id}}));
 
