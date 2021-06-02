@@ -91,7 +91,6 @@ export default class OpenlaneExecution extends MicroService {
                     regressionScript += `\n${property}="${regressionScriptFields[property]}\n"\n`;
         }
         const regressionScriptName = `${tag}-regression.config`;
-        console.log(regressionScript);
         console.log(`${this.config.path}/${this.config.directories.scripts}/${regressionScriptName}`);
         fs.writeFileSync(`${this.config.path}/${this.config.directories.scripts}/${regressionScriptName}`, regressionScript);
         return regressionScriptName;

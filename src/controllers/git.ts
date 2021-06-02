@@ -3,7 +3,7 @@ import { logger, database } from "../utils";
 
 
 export const gitController = async (data) => {
-    const jobDetails = JSON.parse(data.value).message;
+    let jobDetails = JSON.parse(data.value).message;
 
     const git = await Git.getInstance();
 
@@ -12,13 +12,7 @@ export const gitController = async (data) => {
     await git.cloneRepo(jobDetails.repoURL, jobDetails.id, jobDetails.designName)
         .then(() => logger.info(`Git Service:: Cloned job design directory [${jobDetails.id}]`));
 
-    let newJobDetails = await database()["job"].findByPk(jobDetails.id);
-    newJobDetails = newJobDetails.get({plain: true});
+    jobDetails = await database()["job"].findByPk(jobDetails.id);
 
-    if (jobDetails.regressionScript) {
-        newJobDetails.regressionScript = jobDetails.regressionScript;
-        console.log(newJobDetails);
-    }
-
-    await git.publish("git-out", newJobDetails);
+    await git.publish("git-out", jobDetails);
 };
