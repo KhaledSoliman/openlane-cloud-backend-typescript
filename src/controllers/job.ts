@@ -9,15 +9,18 @@ import * as csv from "csv-parser";
 export const jobController = async (req, res) => {
     const userUUID = req.userUUID;
     const jobDetails = req.body.job;
-    console.log(req.body.job);
 
-
-    logger.info("JOB:: Received job request");
+    logger.info("Job Service::  Received job request");
 
     // TODO:Missing step validate repository
 
     const jobService = await Job.getInstance();
     const job = await jobService.createJob(userUUID, jobDetails);
+    if (jobDetails.regressionScript) {
+        job.regressionScript = jobDetails.regressionScript;
+        console.log(job);
+    }
+
     await jobService.publish(jobDetails)
         .then(() => logger.info(`Job Service:: Published new job [${job.id}]`));
     res.status(statusCode.CREATED_201).send();
