@@ -9,6 +9,7 @@ import * as csv from "csv-parser";
 export const jobController = async (req, res) => {
     const userUUID = req.userUUID;
     const jobDetails = req.body.job;
+    console.log(req.body.job);
 
 
     logger.info("JOB:: Received job request");
@@ -17,7 +18,7 @@ export const jobController = async (req, res) => {
 
     const jobService = await Job.getInstance();
     const job = await jobService.createJob(userUUID, jobDetails);
-    await jobService.publish(job)
+    await jobService.publish(jobDetails)
         .then(() => logger.info(`Job Service:: Published new job [${job.id}]`));
     res.status(statusCode.CREATED_201).send();
 };
