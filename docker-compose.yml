@@ -83,11 +83,11 @@ services:
         userns_mode: "host"
         privileged: true
         volumes:
-            - /usr/bin/sdiag:/usr/bin/sdiag
-            - /usr/bin/sinfo:/usr/bin/sinfo
-            - /usr/bin/squeue:/usr/bin/squeue
-            - /etc/slurm:/etc/slurm:ro
-            - /usr/lib/slurm:/usr/lib/slurm:ro
+            - /usr/local/bin/sdiag:/usr/bin/sdiag
+            - /usr/local/bin/sinfo:/usr/bin/sinfo
+            - /usr/local/bin/squeue:/usr/bin/squeue
+            - /etc:/etc/slurm:ro
+            - /usr/local/lib/slurm:/usr/lib/slurm:ro
             - /etc/hosts:/etc/hosts:ro
             - /var/run/munge:/var/run/munge:ro
         ports:

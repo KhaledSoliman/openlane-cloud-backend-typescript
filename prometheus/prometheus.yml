@@ -11,4 +11,4 @@ scrape_configs:
       scrape_timeout: 30s
       static_configs:
           - targets:
-                - prometheus-slurm-exporter:8081
+                - prometheus-slurm-exporter:8080
