@@ -6,8 +6,9 @@ scrape_configs:
           - targets:
                 - cadvisor:8080
     # SLURM resource manager:
-#    - job_name: 'slurm_exporter'
-#      scrape_interval: 30s
-#      scrape_timeout: 30s
-#      static_configs:
-#          - targets: ['slurm_host.fqdn:3033']
+    - job_name: 'slurm_exporter'
+      scrape_interval: 30s
+      scrape_timeout: 30s
+      static_configs:
+          - targets:
+                - prometheus-slurm-exporter:8081

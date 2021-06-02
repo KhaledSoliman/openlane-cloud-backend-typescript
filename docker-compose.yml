@@ -38,8 +38,10 @@ services:
             - 9090:9090
         links:
             - cadvisor:cadvisor
+            - prometheus-slurm-exporter:prometheus-slurm-exporter
         depends_on:
             - cadvisor
+            - prometheus-slurm-exporter
         restart: always
 
     grafana:
@@ -71,6 +73,25 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock:ro
         ports:
             - 8080:8080
+        restart: always
+        deploy:
+            mode: global
+
+    prometheus-slurm-exporter:
+        image: dholt/prometheus-slurm-exporter
+        container_name: prometheus-slurm-exporter
+        userns_mode: "host"
+        privileged: true
+        volumes:
+            - /usr/bin/sdiag:/usr/bin/sdiag
+            - /usr/bin/sinfo:/usr/bin/sinfo
+            - /usr/bin/squeue:/usr/bin/squeue
+            - /etc/slurm:/etc/slurm:ro
+            - /usr/lib/slurm:/usr/lib/slurm:ro
+            - /etc/hosts:/etc/hosts:ro
+            - /var/run/munge:/var/run/munge:ro
+        ports:
+            - 8081:8080
         restart: always
         deploy:
             mode: global
