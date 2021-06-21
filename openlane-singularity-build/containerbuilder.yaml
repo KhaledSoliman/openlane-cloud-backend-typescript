@@ -1,7 +1,7 @@
 steps:
-- name: gcr.io/model-genius-552/singularity-3.7.3
+- name: gcr.io/$PROJECT_ID/singularity-${_SINGULARITY_VERSION}
   args: ['build', 'openlane.sif', 'openlane.def']
 artifacts:
   objects:
-    location: 'gs://model-genius-552-singularity'
+    location: 'gs://${SINGULARITY_REPO}'
     paths: ['openlane.sif']

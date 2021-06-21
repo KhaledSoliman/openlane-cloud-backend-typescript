@@ -163,17 +163,166 @@ You will need the following things properly installed on your backend virtual ma
     gsutil acl ch -g All:R gs://${SINGULARITY_REPO}/openlane.sif
     ```
 
-## Installation
-* Use the openlane-singularity-build to build the openlane singularity container
-* make sure docker is running
-* `docker-compose up`
-* `npm install sqlite3`
-* `npm install`
-* `npm run build`
-* `pm2 start ./build/src/server.js`
-* wait for a minute so that all microservices are up and running. 
-When the backend is fully booted, you should see a log saying " BOOT :: <> <> <> <> <> <> <> <> <> <> Listening on 0.0.0.0:3030 <> <> <> <> <> <> <> <> <> <>
-".
+### Backend ###
+After using the openlane-singularity-build to build the openlane singularity container now its time to build the backend and run it.
+
+1. In Cloud Shell, log in to the login node of your Slurm cluster:
+    ```shell script
+    export CLUSTER_LOGIN_NODE=$(gcloud compute instances list --zones $CLUSTER_ZONE --filter="name~.*login." --format="value(name)" | head -n1)
+    gcloud compute ssh ${CLUSTER_LOGIN_NODE} --zone $CLUSTER_ZONE
+    ```
+2.  Clone Repo
+    ```shell script
+    git clone https://github.com/KhaledSoliman/openlane-cloud-backend-typescript
+    ```
+3.  Change directory into repo
+    ```shell script
+    cd ./openlane-cloud-backend-typescript
+    ```
+4.  [Install docker on centos](https://docs.docker.com/engine/install/centos/)
+5.  Verify docker is running
+    ```shell script
+    docker
+    ```
+    Output should be similar to following:
+    ```shell script
+    Usage:  docker [OPTIONS] COMMAND
+    
+    A self-sufficient runtime for containers
+    
+    Options:
+          --config string      Location of client config files (default "/home/khaledsoli111_gmail_com/.docker")
+      -c, --context string     Name of the context to use to connect to the daemon (overrides DOCKER_HOST env var and default context set with "docker context use")
+      -D, --debug              Enable debug mode
+      -H, --host list          Daemon socket(s) to connect to
+      -l, --log-level string   Set the logging level ("debug"|"info"|"warn"|"error"|"fatal") (default "info")
+          --tls                Use TLS; implied by --tlsverify
+          --tlscacert string   Trust certs signed only by this CA (default "/home/khaledsoli111_gmail_com/.docker/ca.pem")
+          --tlscert string     Path to TLS certificate file (default "/home/khaledsoli111_gmail_com/.docker/cert.pem")
+          --tlskey string      Path to TLS key file (default "/home/khaledsoli111_gmail_com/.docker/key.pem")
+          --tlsverify          Use TLS and verify the remote
+      -v, --version            Print version information and quit
+    
+    Management Commands:
+      app*        Docker App (Docker Inc., v0.9.1-beta3)
+      builder     Manage builds
+      buildx*     Build with BuildKit (Docker Inc., v0.5.1-docker)
+      config      Manage Docker configs
+      container   Manage containers
+      context     Manage contexts
+      image       Manage images
+      manifest    Manage Docker image manifests and manifest lists
+      network     Manage networks
+      node        Manage Swarm nodes
+      plugin      Manage plugins
+      scan*       Docker Scan (Docker Inc., v0.8.0)
+      secret      Manage Docker secrets
+      service     Manage services
+      stack       Manage Docker stacks
+      swarm       Manage Swarm
+      system      Manage Docker
+      trust       Manage trust on Docker images
+      volume      Manage volumes
+    
+    Commands:
+      attach      Attach local standard input, output, and error streams to a running container
+      build       Build an image from a Dockerfile
+      commit      Create a new image from a container's changes
+      cp          Copy files/folders between a container and the local filesystem
+      create      Create a new container
+      diff        Inspect changes to files or directories on a container's filesystem
+      events      Get real time events from the server
+      exec        Run a command in a running container
+      export      Export a container's filesystem as a tar archive
+      history     Show the history of an image
+      images      List images
+      import      Import the contents from a tarball to create a filesystem image
+      info        Display system-wide information
+      inspect     Return low-level information on Docker objects
+      kill        Kill one or more running containers
+      load        Load an image from a tar archive or STDIN
+      login       Log in to a Docker registry
+      logout      Log out from a Docker registry
+      logs        Fetch the logs of a container
+      pause       Pause all processes within one or more containers
+      port        List port mappings or a specific mapping for the container
+      ps          List containers
+      pull        Pull an image or a repository from a registry
+      push        Push an image or a repository to a registry
+      rename      Rename a container
+      restart     Restart one or more containers
+      rm          Remove one or more containers
+      rmi         Remove one or more images
+      run         Run a command in a new container
+      save        Save one or more images to a tar archive (streamed to STDOUT by default)
+      search      Search the Docker Hub for images
+      start       Start one or more stopped containers
+      stats       Display a live stream of container(s) resource usage statistics
+      stop        Stop one or more running containers
+      tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+      top         Display the running processes of a container
+      unpause     Unpause all processes within one or more containers
+      update      Update configuration of one or more containers
+      version     Show the Docker version information
+      wait        Block until one or more containers stop, then print their exit codes
+    
+    Run 'docker COMMAND --help' for more information on a command.
+    
+    To get more help with docker, check out our guides at https://docs.docker.com/go/guides/
+    ```
+6. [Install docker compose](https://docs.docker.com/compose/install/)
+7. Verify docker compose is installed
+    ```shell script
+    docker-compose --version
+    ```
+   Output should be similar to following:
+   ```shell script
+   docker-compose version 1.29.2, build 1110ad01
+   ```
+8. [Install nodejs](https://nodejs.org/en/download/package-manager/)
+9. Verify npm is installed
+    ```shell script
+    npm --version
+    ```
+    Output should be similar to following:
+    ```shell script
+    3.10.10
+    ```
+10. Make .env file with all the needed variables example:
+    ```shell script
+    cat > ./.env <<ENV_FILE
+    GOOGLE_APPLICATION_CREDENTIALS="service_account.json"
+    env="development"
+    PORT=3000
+    MAILER_PASS="test"
+    JOB_CONCURRENCY=10
+    ENV_FILE
+    ```
+11. Get your service_account file from firebase console and place in root directory
+12. Run docker-compose:
+    ```shell script
+    sudo docker-compose up -d
+    ```
+13. Install npm dependencies
+    ```shell script
+    npm install sqlite3
+    npm install
+    ```
+13. Build backend
+    ```shell script
+    npm run build
+    ```
+14. Run backend:
+    ```shell script
+    pm2 start ./build/src/server.js
+    ```
+    or
+    ```shell script
+    npm run start
+    ```
+    * Wait for a minute so that all microservices are up and running. 
+    * When the backend is fully booted, you should see a log saying:
+    `BOOT :: <> <> <> <> <> <> <> <> <> <> Listening on 0.0.0.0:3030 <> <> <> <> <> <> <> <> <> <>`
 
 ## Build
 
