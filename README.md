@@ -314,6 +314,7 @@ After using the openlane-singularity-build to build the openlane singularity con
     ```shell script
     npm run build
     ```
+    Uses Gulp [Gulp](https://gulpjs.com/) for TypeScript build
 14. Run backend:
     ```shell script
     pm2 start ./build/src/server.js
@@ -325,12 +326,6 @@ After using the openlane-singularity-build to build the openlane singularity con
     * Wait for a minute so that all microservices are up and running. 
     * When the backend is fully booted, you should see a log saying:
     `BOOT :: <> <> <> <> <> <> <> <> <> <> Listening on 0.0.0.0:3030 <> <> <> <> <> <> <> <> <> <>`
-
-## Build
-
-`npm run build`
-
-Uses Gulp [Gulp](https://gulpjs.com/) for TypeScript build
 
 #### FOLDER STRUCTURE
 
@@ -437,4 +432,4 @@ Running on localhost:2181. Used along with Kafka
 * Under supervision of:
     * Dr. Mohamed Shalan
     * Mohamed Kassem
-* Documentation inspired by this [google documentation](https://cloud.google.com/architecture/deploying-containerized-workloads-slurm-cluster-compute-engine#installling_singularity_container_platform)
+* Some of the documentation inspired by this [google documentation](https://cloud.google.com/architecture/deploying-containerized-workloads-slurm-cluster-compute-engine#installling_singularity_container_platform)
