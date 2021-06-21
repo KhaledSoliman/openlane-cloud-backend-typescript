@@ -10,6 +10,8 @@ You will need the following things properly installed on your backend virtual ma
 * [Git](http://git-scm.com/)
 * [Node.js](http://nodejs.org/) - Version v8.9.0 (with NPM)
 * Docker
+
+`Allow all traffic from tcp:3030,3000,8080,9000,9092 on GCP firewall on your slurm network`
 ### Cloning into this repo ###
 1.  ```shell script
     git clone https://github.com/KhaledSoliman/openlane-cloud-backend-typescript
@@ -292,8 +294,8 @@ After using the openlane-singularity-build to build the openlane singularity con
     ```shell script
     cat > ./.env <<ENV_FILE
     GOOGLE_APPLICATION_CREDENTIALS="service_account.json"
-    env="development"
-    PORT=3000
+    env="dev"
+    PORT=3030
     MAILER_PASS="test"
     JOB_CONCURRENCY=10
     ENV_FILE
